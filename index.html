@@ -4,391 +4,451 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>+MARKA | Relevamiento</title>
-<link rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 <style>
-:root { --mk-dark:#1a1a2e; --mk-red:#D85A30; }
-*{box-sizing:border-box}
-body{background:#f5f4f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-     padding-bottom:100px;font-size:15px}
+/* ── Reset & base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* Header */
-.mk-header{
-  background:var(--mk-dark);color:#fff;padding:13px 16px;
-  position:sticky;top:0;z-index:200;
-  display:flex;align-items:center;gap:10px;
+:root {
+  --dark:    #1a1a2e;
+  --red:     #D85A30;
+  --surface: #f5f4f0;
+  --white:   #ffffff;
+  --border:  #e2dfd8;
+  --text:    #1a1a1a;
+  --muted:   #888;
+  --radius:  12px;
+  --green:   #0F6E56;
 }
-.mk-logo{background:var(--mk-red);color:#fff;font-weight:700;font-size:13px;
-         padding:4px 10px;border-radius:6px;letter-spacing:.5px}
-.gps-pill{margin-left:auto;font-size:11px;padding:3px 9px;border-radius:20px;
-          background:rgba(255,255,255,.12);display:flex;align-items:center;gap:4px}
-.gps-pill.ok {background:rgba(29,158,117,.35);color:#5DCAA5}
-.gps-pill.err{background:rgba(216,90,48,.35); color:#f09070}
 
-/* Sección */
-.mk-card{background:#fff;border-radius:14px;border:1px solid #e8e5e0;
-         padding:16px;margin:12px 12px 0}
-.mk-label{font-size:11px;font-weight:600;text-transform:uppercase;
-          letter-spacing:.7px;color:#888;margin-bottom:10px}
-
-/* Controles */
-select.form-select,input.form-control{border-radius:9px;border:1px solid #ddd;font-size:14px}
-select.form-select:focus,input.form-control:focus{
-  border-color:#1a1a2e;box-shadow:0 0 0 3px rgba(26,26,46,.12)}
-
-/* Contadores */
-.cnt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.cnt-box{border:1px solid #e8e5e0;border-radius:11px;padding:10px 6px;text-align:center}
-.cnt-lbl{font-size:11px;color:#777;margin-bottom:6px}
-.cnt-ctrl{display:flex;align-items:center;justify-content:center;gap:8px}
-.cbtn{width:30px;height:30px;border-radius:50%;border:1px solid #ddd;
-      background:#f5f5f5;font-size:20px;line-height:1;cursor:pointer;
-      display:flex;align-items:center;justify-content:center;color:#333;
-      -webkit-tap-highlight-color:transparent;user-select:none}
-.cbtn:active{background:#e0e0e0}
-.cval{font-size:22px;font-weight:600;min-width:30px}
-.total-lbl{text-align:right;font-size:12px;color:#666;margin-top:8px}
-.total-lbl strong{color:var(--mk-dark)}
-
-/* Productos */
-.prod-item{display:flex;align-items:center;padding:9px 0;
-           border-bottom:1px solid #f0ede8;gap:10px}
-.prod-item:last-child{border-bottom:none}
-.prod-name{flex:1;font-size:14px;line-height:1.3}
-.prod-brand{font-size:11px;color:#aaa;display:block}
-.qty{width:62px;text-align:center;border:1px solid #ddd;border-radius:8px;
-     padding:6px 4px;font-size:15px;font-weight:500;
-     -moz-appearance:textfield}
-.qty::-webkit-inner-spin-button{-webkit-appearance:none}
-
-/* Fotos */
-.photo-strip{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px}
-.photo-strip img{width:76px;height:76px;border-radius:10px;
-                 object-fit:cover;border:1px solid #ddd;flex-shrink:0}
-.add-photo{width:76px;height:76px;border-radius:10px;
-           border:2px dashed #ccc;background:transparent;
-           display:flex;flex-direction:column;align-items:center;
-           justify-content:center;gap:3px;cursor:pointer;
-           color:#aaa;font-size:11px;flex-shrink:0;
-           -webkit-tap-highlight-color:transparent}
-.add-photo:active{background:#f5f5f5}
-.upload-status{font-size:11px;margin-top:6px;color:#888;min-height:16px}
-
-/* Botón enviar fijo */
-.submit-wrap{
-  position:fixed;bottom:0;left:0;right:0;
-  background:#fff;padding:12px 16px;
-  border-top:1px solid #e8e5e0;
-  z-index:100;
+body {
+  background: var(--surface);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  padding-bottom: 100px;
+  -webkit-font-smoothing: antialiased;
 }
-.submit-btn{
-  width:100%;padding:14px;background:var(--mk-dark);color:#fff;
-  border:none;border-radius:12px;font-size:15px;font-weight:600;
-  cursor:pointer;letter-spacing:.3px;
+
+/* ── Header ── */
+.header {
+  background: var(--dark);
+  color: #fff;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
-.submit-btn:disabled{opacity:.5}
-
-/* Toast */
-#toast{
-  position:fixed;bottom:76px;left:50%;
-  transform:translateX(-50%) translateY(30px);
-  opacity:0;background:var(--mk-dark);color:#fff;
-  padding:11px 22px;border-radius:30px;font-size:13px;
-  transition:opacity .25s,transform .25s;z-index:9999;
-  max-width:90vw;text-align:center;pointer-events:none;
+.logo {
+  background: var(--red);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 5px 11px;
+  border-radius: 7px;
+  letter-spacing: .5px;
 }
-#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-#toast.ok {background:#0F6E56}
-#toast.err{background:#8B2500}
+.header-title { font-size: 15px; font-weight: 500; opacity: .9; }
+.gps-badge {
+  margin-left: auto;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(255,255,255,.12);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: background .3s, color .3s;
+}
+.gps-badge.ok  { background: rgba(15,110,86,.4);  color: #5DCAA5; }
+.gps-badge.err { background: rgba(216,90,48,.4);  color: #f09070; }
 
-.spin{display:inline-block;width:15px;height:15px;border:2px solid #fff;
-      border-top-color:transparent;border-radius:50%;
-      animation:sp .7s linear infinite;vertical-align:middle;margin-right:6px}
-@keyframes sp{to{transform:rotate(360deg)}}
+/* ── Cards ── */
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 18px 16px;
+  margin: 12px 12px 0;
+}
+.card-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
 
-/* Skeleton loader */
-.skel{background:#f0ede8;border-radius:8px;height:44px;margin-bottom:8px;
-      animation:pulse 1.2s ease-in-out infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+/* ── Campos ── */
+.field { margin-bottom: 14px; }
+.field:last-child { margin-bottom: 0; }
+.field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 5px;
+}
+.field label .req { color: var(--red); margin-left: 2px; }
+
+input[type="text"],
+input[type="number"],
+textarea,
+select {
+  width: 100%;
+  padding: 11px 13px;
+  border: 1.5px solid var(--border);
+  border-radius: 9px;
+  font-size: 15px;
+  color: var(--text);
+  background: var(--white);
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+  appearance: none;
+  -webkit-appearance: none;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: var(--dark);
+  box-shadow: 0 0 0 3px rgba(26,26,46,.1);
+}
+input.error, select.error, textarea.error {
+  border-color: var(--red);
+  box-shadow: 0 0 0 3px rgba(216,90,48,.12);
+}
+textarea { resize: vertical; min-height: 80px; }
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+/* ── Dos columnas ── */
+.row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* ── Foto ── */
+.photo-area {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 20px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .2s, background .2s;
+  position: relative;
+}
+.photo-area:hover, .photo-area.dragover {
+  border-color: var(--dark);
+  background: #f8f8f8;
+}
+.photo-area input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+.photo-icon { font-size: 36px; margin-bottom: 6px; }
+.photo-area p { font-size: 14px; color: var(--muted); }
+.photo-area strong { display: block; font-size: 14px; color: var(--dark); margin-bottom: 4px; }
+.photo-preview {
+  margin-top: 14px;
+  display: none;
+  position: relative;
+}
+.photo-preview img {
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+}
+.remove-photo {
+  position: absolute;
+  top: 8px; right: 8px;
+  background: rgba(0,0,0,.55);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 28px; height: 28px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.upload-status {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 8px;
+  min-height: 18px;
+  text-align: center;
+}
+
+/* ── Botón enviar ── */
+.submit-wrap {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  padding: 12px 16px;
+  background: var(--white);
+  border-top: 1px solid var(--border);
+  z-index: 100;
+}
+.btn-submit {
+  width: 100%;
+  padding: 15px;
+  background: var(--dark);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: .3px;
+  transition: background .2s, opacity .2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.btn-submit:disabled { opacity: .55; cursor: not-allowed; }
+.btn-submit:not(:disabled):active { background: #2e2e5a; }
+
+/* ── Toast ── */
+.toast {
+  position: fixed;
+  bottom: 76px; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  opacity: 0;
+  background: var(--dark);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: opacity .25s, transform .25s;
+  z-index: 9999;
+  max-width: 88vw;
+  text-align: center;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.ok   { background: var(--green); }
+.toast.err  { background: #8B2500; }
+
+/* ── Spinner ── */
+.spinner {
+  width: 18px; height: 18px;
+  border: 2.5px solid rgba(255,255,255,.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Error msgs ── */
+.err-msg {
+  font-size: 12px;
+  color: var(--red);
+  margin-top: 4px;
+  display: none;
+}
+.err-msg.show { display: block; }
+
+/* ── Responsive ── */
+@media (max-width: 400px) {
+  .row-2 { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
 
 <!-- HEADER -->
-<div class="mk-header">
-  <span class="mk-logo">+MARKA</span>
-  <span style="font-size:14px;opacity:.85;font-weight:500">Relevamiento</span>
-  <span class="gps-pill" id="gpsPill">📍 GPS...</span>
+<header class="header">
+  <span class="logo">+MARKA</span>
+  <span class="header-title">Relevamiento de Activación</span>
+  <span class="gps-badge" id="gpsBadge">📍 GPS...</span>
+</header>
+
+<!-- SECCIÓN 1: Quién y dónde -->
+<div class="card">
+  <div class="card-title">Datos del relevamiento</div>
+
+  <div class="field">
+    <label for="supervisor">Supervisor <span class="req">*</span></label>
+    <input type="text" id="supervisor" placeholder="Tu nombre completo"
+           autocomplete="name" autocapitalize="words">
+    <div class="err-msg" id="err-supervisor">Campo obligatorio</div>
+  </div>
+
+  <div class="field">
+    <label for="local">Local visitado <span class="req">*</span></label>
+    <input type="text" id="local" placeholder="Nombre o dirección del local"
+           autocapitalize="words">
+    <div class="err-msg" id="err-local">Campo obligatorio</div>
+  </div>
 </div>
 
-<!-- 1. SUPERVISOR -->
-<div class="mk-card">
-  <div class="mk-label">Supervisor</div>
-  <select id="selSupervisor" class="form-select mb-2" onchange="onSupervisorChange()">
-    <option value="">— Seleccioná tu nombre —</option>
-  </select>
-  <div id="cedulaDisplay" style="font-size:12px;color:#888;display:none">
-    Cédula: <strong id="cedulaVal">—</strong>
-  </div>
-</div>
+<!-- SECCIÓN 2: Activación -->
+<div class="card">
+  <div class="card-title">Información de la activación</div>
 
-<!-- 2. MARCA y PUNTO DE VENTA -->
-<div class="mk-card">
-  <div class="mk-label">Activación</div>
-  <div class="mb-3">
-    <label class="form-label fw-semibold" style="font-size:13px">Marca</label>
-    <select id="selMarca" class="form-select" onchange="onMarcaChange()">
-      <option value="">— Seleccioná marca —</option>
+  <div class="field">
+    <label for="marca">Marca <span class="req">*</span></label>
+    <select id="marca" onchange="onMarcaChange()">
+      <option value="">— Seleccioná la marca —</option>
+      <option>Marca A</option>
+      <option>Marca B</option>
+      <option>Marca C</option>
+      <option value="__otro__">Otra...</option>
     </select>
+    <input type="text" id="marcaOtro" placeholder="Escribí la marca"
+           style="display:none; margin-top:8px">
+    <div class="err-msg" id="err-marca">Campo obligatorio</div>
   </div>
-  <div class="mb-3">
-    <label class="form-label fw-semibold" style="font-size:13px">Punto de Venta</label>
-    <select id="selPdv" class="form-select">
-      <option value="">— Primero elegí marca —</option>
-    </select>
-  </div>
-  <div class="row g-2">
-    <div class="col-6">
-      <label class="form-label fw-semibold" style="font-size:13px">Tipo de Activación</label>
-      <select id="selTipo" class="form-select">
+
+  <div class="row-2">
+    <div class="field">
+      <label for="tipo">Tipo de activación <span class="req">*</span></label>
+      <select id="tipo">
         <option value="">Seleccionar...</option>
         <option>Degustación</option>
         <option>Sorteo</option>
         <option>Regalo por compra</option>
         <option>Demostración</option>
         <option>Sampling</option>
+        <option>Exhibición</option>
         <option>Otro</option>
       </select>
+      <div class="err-msg" id="err-tipo">Campo obligatorio</div>
     </div>
-    <div class="col-6">
-      <label class="form-label fw-semibold" style="font-size:13px">Temática</label>
-      <input id="inputTematica" type="text" class="form-control" placeholder="Ej: Verano 2025">
+
+    <div class="field">
+      <label for="personas">Personas abordadas <span class="req">*</span></label>
+      <input type="number" id="personas" min="0" placeholder="0"
+             inputmode="numeric" pattern="[0-9]*">
+      <div class="err-msg" id="err-personas">Ingresá un número</div>
     </div>
+  </div>
+
+  <div class="field">
+    <label for="tematica">Temática de la activación</label>
+    <input type="text" id="tematica" placeholder="Ej: Verano 2025, Lanzamiento..."
+           autocapitalize="sentences">
+  </div>
+
+  <div class="field">
+    <label for="ventas">Ventas concretadas — productos</label>
+    <textarea id="ventas"
+      placeholder="Ej: Producto A x5, Producto B x2&#10;Podés listar varios productos"></textarea>
   </div>
 </div>
 
-<!-- 3. ABORDAJES -->
-<div class="mk-card">
-  <div class="mk-label">Abordajes</div>
-  <div class="cnt-grid">
-    <div class="cnt-box">
-      <div class="cnt-lbl">Hombres</div>
-      <div class="cnt-ctrl">
-        <button class="cbtn" onclick="adj('h',-1)" aria-label="Menos">−</button>
-        <span class="cval" id="vh">0</span>
-        <button class="cbtn" onclick="adj('h',1)"  aria-label="Más">+</button>
-      </div>
-    </div>
-    <div class="cnt-box">
-      <div class="cnt-lbl">Mujeres</div>
-      <div class="cnt-ctrl">
-        <button class="cbtn" onclick="adj('m',-1)" aria-label="Menos">−</button>
-        <span class="cval" id="vm">0</span>
-        <button class="cbtn" onclick="adj('m',1)"  aria-label="Más">+</button>
-      </div>
-    </div>
-    <div class="cnt-box">
-      <div class="cnt-lbl">Niños</div>
-      <div class="cnt-ctrl">
-        <button class="cbtn" onclick="adj('n',-1)" aria-label="Menos">−</button>
-        <span class="cval" id="vn">0</span>
-        <button class="cbtn" onclick="adj('n',1)"  aria-label="Más">+</button>
-      </div>
-    </div>
+<!-- SECCIÓN 3: Foto -->
+<div class="card">
+  <div class="card-title">Foto del relevamiento</div>
+  <div class="photo-area" id="photoArea">
+    <input type="file" id="fotoInput" accept="image/*" capture="environment"
+           onchange="handleFoto(this)" aria-label="Seleccionar o tomar foto">
+    <div class="photo-icon">📷</div>
+    <strong>Tomar foto o seleccionar</strong>
+    <p>Toca para usar la cámara del celular</p>
   </div>
-  <div class="total-lbl">Total: <strong id="totalAb">0</strong></div>
-</div>
-
-<!-- 4. VENTAS -->
-<div class="mk-card">
-  <div class="mk-label">Ventas concretadas</div>
-  <div id="prodContainer">
-    <div class="skel"></div><div class="skel"></div>
+  <div class="photo-preview" id="photoPreview">
+    <img id="photoImg" src="" alt="Vista previa">
+    <button class="remove-photo" onclick="quitarFoto()" aria-label="Quitar foto">✕</button>
   </div>
-  <div id="prodMsg" style="font-size:12px;color:#aaa;margin-top:6px;display:none">
-    Elegí una marca para ver los productos disponibles.
-  </div>
-</div>
-
-<!-- 5. FOTO -->
-<div class="mk-card">
-  <div class="mk-label">Foto del relevamiento</div>
-  <div class="photo-strip" id="photoStrip">
-    <button class="add-photo" onclick="triggerCam()" aria-label="Tomar foto">
-      <svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="2"
-           viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-        <circle cx="12" cy="13" r="4"/>
-      </svg>
-      Foto
-    </button>
-  </div>
-  <input type="file" id="camInput" accept="image/*" capture="environment"
-         style="display:none" onchange="handlePhoto(this)">
   <div class="upload-status" id="uploadStatus"></div>
 </div>
 
 <!-- BOTÓN FIJO -->
 <div class="submit-wrap">
-  <button class="submit-btn" id="btnEnviar" onclick="enviarFormulario()">
+  <button class="btn-submit" id="btnEnviar" onclick="enviar()">
     Enviar Relevamiento
   </button>
 </div>
 
 <!-- TOAST -->
-<div id="toast"></div>
+<div class="toast" id="toast"></div>
 
 <script>
-// ═══════════════════════════════════════════════════════
-// ESTADO GLOBAL
-// ═══════════════════════════════════════════════════════
-const S = {
-  h:0, m:0, n:0,
-  supervisores: [],
-  productos: [],      // { marca, producto }
-  pdvs: [],           // { marca, local }
-  marcas: [],
-  fotoUrl: "",        // link a Drive (una sola foto)
-  fotoSubiendo: false,
-  lat: null, lng: null,
-};
+// ══════════════════════════════════════════════════════
+// CONFIGURACIÓN — Reemplazá con tu URL de Apps Script
+// ══════════════════════════════════════════════════════
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/1zkymKKxo4a2bxHUjJLJJvCiiTkx5TcfGTfU0atvXeys/exec";
 
-// ═══════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════
+// ESTADO
+// ══════════════════════════════════════════════════════
+let fotoBase64 = null;
+let gpsData    = { lat: null, lng: null };
+
+// ══════════════════════════════════════════════════════
 // GPS
-// ═══════════════════════════════════════════════════════
-const gpsPill = document.getElementById('gpsPill');
+// ══════════════════════════════════════════════════════
+const gpsBadge = document.getElementById('gpsBadge');
+
 if (navigator.geolocation) {
   navigator.geolocation.getCurrentPosition(
-    p => {
-      S.lat = p.coords.latitude.toFixed(6);
-      S.lng = p.coords.longitude.toFixed(6);
-      gpsPill.className = 'gps-pill ok';
-      gpsPill.textContent = '📍 ±' + Math.round(p.coords.accuracy) + 'm';
+    pos => {
+      gpsData.lat = pos.coords.latitude.toFixed(6);
+      gpsData.lng = pos.coords.longitude.toFixed(6);
+      gpsBadge.className = 'gps-badge ok';
+      gpsBadge.textContent = '📍 ±' + Math.round(pos.coords.accuracy) + 'm';
     },
-    () => { gpsPill.className='gps-pill err'; gpsPill.textContent='📍 Sin GPS'; },
-    { enableHighAccuracy:true, timeout:10000 }
+    () => {
+      gpsBadge.className = 'gps-badge err';
+      gpsBadge.textContent = '📍 Sin GPS';
+    },
+    { enableHighAccuracy: true, timeout: 10000 }
   );
+} else {
+  gpsBadge.textContent = '📍 No disponible';
 }
 
-// ═══════════════════════════════════════════════════════
-// CARGA INICIAL DE DATOS
-// ═══════════════════════════════════════════════════════
-document.addEventListener('DOMContentLoaded', () => {
-  google.script.run
-    .withSuccessHandler(poblarFormulario)
-    .withFailureHandler(err => toast('Error al cargar datos: ' + err.message, 'err'))
-    .getDatosIniciales();
-});
-
-function poblarFormulario(data) {
-  if (!data.success) { toast('Error: ' + data.error, 'err'); return; }
-
-  S.supervisores = data.supervisores;
-  S.productos    = data.productos;
-  S.pdvs         = data.pdvs;
-  S.marcas       = data.marcas;
-
-  // Supervisores
-  const selSup = document.getElementById('selSupervisor');
-  selSup.innerHTML = '<option value="">— Seleccioná tu nombre —</option>' +
-    data.supervisores.map(s =>
-      `<option value="${esc(s.nombre)}" data-cedula="${esc(s.cedula)}">${esc(s.nombre)}</option>`
-    ).join('');
-
-  // Marcas
-  const selMarca = document.getElementById('selMarca');
-  selMarca.innerHTML = '<option value="">— Seleccioná marca —</option>' +
-    data.marcas.map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join('');
-
-  // Productos — mostrar mensaje inicial
-  document.getElementById('prodContainer').innerHTML = '';
-  document.getElementById('prodMsg').style.display = 'block';
-}
-
-// ═══════════════════════════════════════════════════════
-// SUPERVISOR
-// ═══════════════════════════════════════════════════════
-function onSupervisorChange() {
-  const sel = document.getElementById('selSupervisor');
-  const opt = sel.options[sel.selectedIndex];
-  const ced = opt ? opt.dataset.cedula : '';
-  const box = document.getElementById('cedulaDisplay');
-  if (ced) {
-    document.getElementById('cedulaVal').textContent = ced;
-    box.style.display = 'block';
-  } else {
-    box.style.display = 'none';
-  }
-}
-
-// ═══════════════════════════════════════════════════════
-// MARCA → PDV + PRODUCTOS
-// ═══════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════
+// SELECT "Otra marca"
+// ══════════════════════════════════════════════════════
 function onMarcaChange() {
-  const marca = document.getElementById('selMarca').value;
-
-  // PDV
-  const selPdv = document.getElementById('selPdv');
-  const pdvsFiltrados = S.pdvs.filter(p => p.marca === marca);
-  selPdv.innerHTML = pdvsFiltrados.length
-    ? '<option value="">— Seleccioná local —</option>' +
-        pdvsFiltrados.map(p => `<option value="${esc(p.local)}">${esc(p.local)}</option>`).join('')
-    : '<option value="">Sin locales para esta marca</option>';
-
-  // Productos
-  const cont = document.getElementById('prodContainer');
-  const msg  = document.getElementById('prodMsg');
-  const prods = S.productos.filter(p => p.marca === marca);
-
-  if (!marca) {
-    cont.innerHTML = '';
-    msg.style.display = 'block';
-    return;
-  }
-  msg.style.display = 'none';
-
-  if (!prods.length) {
-    cont.innerHTML = '<p style="font-size:13px;color:#aaa">Sin productos para esta marca.</p>';
-    return;
-  }
-
-  cont.innerHTML = prods.map(p => `
-    <div class="prod-item">
-      <div class="prod-name">
-        ${esc(p.producto)}
-        <span class="prod-brand">${esc(p.marca)}</span>
-      </div>
-      <input class="qty" type="number" min="0" value="0"
-             inputmode="numeric" pattern="[0-9]*"
-             data-prod="${esc(p.producto)}" aria-label="Cantidad ${esc(p.producto)}">
-    </div>
-  `).join('');
+  const sel   = document.getElementById('marca');
+  const extra = document.getElementById('marcaOtro');
+  extra.style.display = sel.value === '__otro__' ? 'block' : 'none';
+  if (sel.value !== '__otro__') extra.value = '';
 }
 
-// ═══════════════════════════════════════════════════════
-// CONTADORES
-// ═══════════════════════════════════════════════════════
-function adj(k, d) {
-  S[k] = Math.max(0, S[k] + d);
-  document.getElementById('v' + k).textContent = S[k];
-  document.getElementById('totalAb').textContent = S.h + S.m + S.n;
-}
-
-// ═══════════════════════════════════════════════════════
-// CÁMARA Y FOTO
-// ═══════════════════════════════════════════════════════
-function triggerCam() { document.getElementById('camInput').click(); }
-
-function handlePhoto(input) {
+// ══════════════════════════════════════════════════════
+// FOTO
+// ══════════════════════════════════════════════════════
+function handleFoto(input) {
   const file = input.files[0];
   if (!file) return;
+
   const reader = new FileReader();
-  reader.onload = e => comprimirYSubir(e.target.result, file.name);
+  reader.onload = e => {
+    comprimir(e.target.result, b64 => {
+      fotoBase64 = b64;
+      document.getElementById('photoImg').src    = b64;
+      document.getElementById('photoPreview').style.display = 'block';
+      document.getElementById('photoArea').style.display    = 'none';
+      document.getElementById('uploadStatus').textContent   =
+        '✅ Foto lista — se subirá al enviar el formulario';
+    });
+  };
   reader.readAsDataURL(file);
   input.value = '';
 }
 
-function comprimirYSubir(dataUrl, nombre) {
+function quitarFoto() {
+  fotoBase64 = null;
+  document.getElementById('photoPreview').style.display = 'none';
+  document.getElementById('photoArea').style.display    = 'block';
+  document.getElementById('uploadStatus').textContent   = '';
+}
+
+function comprimir(dataUrl, callback) {
   const img = new Image();
   img.onload = () => {
     const MAX = 1280;
@@ -397,155 +457,151 @@ function comprimirYSubir(dataUrl, nombre) {
       if (w >= h) { h = Math.round(h * MAX / w); w = MAX; }
       else        { w = Math.round(w * MAX / h); h = MAX; }
     }
-    const c = document.createElement('canvas');
-    c.width = w; c.height = h;
-    c.getContext('2d').drawImage(img, 0, 0, w, h);
-    const b64 = c.toDataURL('image/jpeg', 0.78);
-
-    // Preview
-    const strip = document.getElementById('photoStrip');
-    // Remover foto anterior si existe
-    strip.querySelectorAll('img').forEach(el => el.remove());
-    const imgEl = document.createElement('img');
-    imgEl.src = b64; imgEl.alt = 'Foto';
-    strip.insertBefore(imgEl, strip.querySelector('.add-photo'));
-
-    // Subir
-    S.fotoSubiendo = true;
-    S.fotoUrl = '';
-    setStatus('⏫ Subiendo foto a Drive...');
-
-    const marca = document.getElementById('selMarca').value || 'Sin Marca';
-    const fecha = new Date().toISOString().slice(0,10);
-    const fileName = 'foto_' + Date.now() + '.jpg';
-
-    google.script.run
-      .withSuccessHandler(res => {
-        S.fotoSubiendo = false;
-        if (res.success) {
-          S.fotoUrl = res.url;
-          setStatus('✅ Foto guardada correctamente.');
-        } else {
-          setStatus('⚠️ Error al subir foto: ' + res.error);
-        }
-      })
-      .withFailureHandler(err => {
-        S.fotoSubiendo = false;
-        setStatus('⚠️ Error: ' + err.message);
-      })
-      .subirFoto({ base64: b64, fileName, marca, fecha });
+    const canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+    callback(canvas.toDataURL('image/jpeg', 0.78));
   };
   img.src = dataUrl;
 }
 
-function setStatus(msg) {
-  document.getElementById('uploadStatus').textContent = msg;
-}
+// ══════════════════════════════════════════════════════
+// VALIDACIÓN
+// ══════════════════════════════════════════════════════
+function validar() {
+  let ok = true;
 
-// ═══════════════════════════════════════════════════════
-// ENVIAR
-// ═══════════════════════════════════════════════════════
-function enviarFormulario() {
-  // Validar campos obligatorios
-  const supervisor  = document.getElementById('selSupervisor').value;
-  const marca       = document.getElementById('selMarca').value;
-  const pdv         = document.getElementById('selPdv').value;
-  const tipo        = document.getElementById('selTipo').value;
-  const tematica    = document.getElementById('inputTematica').value.trim();
+  const reglas = [
+    { id: 'supervisor', errId: 'err-supervisor', test: v => v.trim().length >= 2 },
+    { id: 'local',      errId: 'err-local',      test: v => v.trim().length >= 2 },
+    { id: 'tipo',       errId: 'err-tipo',        test: v => v !== '' },
+    { id: 'personas',   errId: 'err-personas',    test: v => v !== '' && parseInt(v) >= 0 },
+  ];
 
-  const opt = document.getElementById('selSupervisor').options;
-  const cedula = opt[opt.selectedIndex]?.dataset?.cedula || '';
+  // Marca
+  const marcaSel = document.getElementById('marca').value;
+  const marcaOtro = document.getElementById('marcaOtro').value.trim();
+  const marcaOk = marcaSel !== '' && (marcaSel !== '__otro__' || marcaOtro.length >= 1);
+  mostrarError('marca', 'err-marca', !marcaOk);
+  if (!marcaOk) ok = false;
 
-  if (!supervisor) { toast('Seleccioná tu nombre',              'err'); return; }
-  if (!marca)      { toast('Seleccioná una marca',              'err'); return; }
-  if (!pdv)        { toast('Seleccioná el punto de venta',      'err'); return; }
-  if (!tipo)       { toast('Seleccioná el tipo de activación',  'err'); return; }
-  if (S.h + S.m + S.n === 0) { toast('Registrá al menos un abordaje', 'err'); return; }
-  if (S.fotoSubiendo) { toast('Esperá, la foto se está subiendo...', 'err'); return; }
-
-  // Armar texto de ventas
-  const ventas = [];
-  document.querySelectorAll('.qty').forEach(el => {
-    const qty = parseInt(el.value) || 0;
-    if (qty > 0) ventas.push(el.dataset.prod + ' x' + qty);
+  reglas.forEach(r => {
+    const val = document.getElementById(r.id).value;
+    const valid = r.test(val);
+    mostrarError(r.id, r.errId, !valid);
+    if (!valid) ok = false;
   });
 
-  const btn = document.getElementById('btnEnviar');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spin"></span>Enviando...';
+  return ok;
+}
+
+function mostrarError(fieldId, errId, show) {
+  const field = document.getElementById(fieldId);
+  const err   = document.getElementById(errId);
+  if (!field || !err) return;
+  field.classList.toggle('error', show);
+  err.classList.toggle('show', show);
+}
+
+// Limpiar error al escribir
+['supervisor','local','marca','tipo','personas'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', () => {
+    el.classList.remove('error');
+    const errEl = document.getElementById('err-' + id);
+    if (errEl) errEl.classList.remove('show');
+  });
+});
+
+// ══════════════════════════════════════════════════════
+// ENVIAR
+// ══════════════════════════════════════════════════════
+async function enviar() {
+  if (!validar()) {
+    toast('Completá los campos obligatorios', 'err');
+    // Scroll al primer error
+    const primer = document.querySelector('.error, .err-msg.show');
+    if (primer) primer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  const marcaSel  = document.getElementById('marca').value;
+  const marcaFinal = marcaSel === '__otro__'
+    ? document.getElementById('marcaOtro').value.trim()
+    : marcaSel;
 
   const payload = {
-    supervisor,
-    cedula,
-    fecha: new Date().toLocaleDateString('es-PY'),
-    marca,
-    tipoActivacion: tipo,
-    tematica,
-    puntoDeVenta: pdv,
-    hombres:  S.h,
-    mujeres:  S.m,
-    ninos:    S.n,
-    ventasTexto: ventas.join(', ') || '—',
-    fotoUrl:  S.fotoUrl,
-    lat:  S.lat || '',
-    lng:  S.lng || '',
+    supervisor:     document.getElementById('supervisor').value.trim(),
+    local:          document.getElementById('local').value.trim(),
+    marca:          marcaFinal,
+    tipoActivacion: document.getElementById('tipo').value,
+    tematica:       document.getElementById('tematica').value.trim(),
+    personas:       document.getElementById('personas').value,
+    ventas:         document.getElementById('ventas').value.trim(),
+    foto:           fotoBase64 || null,
+    lat:            gpsData.lat,
+    lng:            gpsData.lng,
   };
 
-  google.script.run
-    .withSuccessHandler(res => {
-      btn.disabled = false;
-      btn.textContent = 'Enviar Relevamiento';
-      if (res.success) {
-        toast('✓ Relevamiento guardado correctamente', 'ok');
-        resetFormulario();
-      } else {
-        toast('Error: ' + res.error, 'err');
-      }
-    })
-    .withFailureHandler(err => {
-      btn.disabled = false;
-      btn.textContent = 'Enviar Relevamiento';
-      toast('Error al guardar: ' + err.message, 'err');
-    })
-    .guardarRelevamiento(payload);
+  // UI: cargando
+  const btn = document.getElementById('btnEnviar');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Enviando...';
+  document.getElementById('uploadStatus').textContent =
+    fotoBase64 ? '⏫ Subiendo foto y guardando datos...' : '';
+
+  try {
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      // Apps Script necesita text/plain para evitar preflight CORS
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      toast('✓ ' + data.message, 'ok');
+      resetForm();
+    } else {
+      toast('Error: ' + (data.error || 'Inténtalo de nuevo'), 'err');
+    }
+  } catch (err) {
+    toast('Error de conexión. Revisá tu internet.', 'err');
+    console.error(err);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = 'Enviar Relevamiento';
+    document.getElementById('uploadStatus').textContent = '';
+  }
 }
 
-// ═══════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════
 // RESET
-// ═══════════════════════════════════════════════════════
-function resetFormulario() {
-  document.getElementById('selSupervisor').value = '';
-  document.getElementById('cedulaDisplay').style.display = 'none';
-  document.getElementById('selMarca').value = '';
-  document.getElementById('selPdv').innerHTML = '<option value="">— Primero elegí marca —</option>';
-  document.getElementById('selTipo').value = '';
-  document.getElementById('inputTematica').value = '';
-  S.h = S.m = S.n = 0;
-  ['vh','vm','vn'].forEach(id => document.getElementById(id).textContent = '0');
-  document.getElementById('totalAb').textContent = '0';
-  document.getElementById('prodContainer').innerHTML = '';
-  document.getElementById('prodMsg').style.display = 'block';
-  document.getElementById('photoStrip').querySelectorAll('img').forEach(e=>e.remove());
-  S.fotoUrl = ''; S.fotoSubiendo = false;
-  setStatus('');
+// ══════════════════════════════════════════════════════
+function resetForm() {
+  ['supervisor','local','tematica','ventas','marcaOtro','personas'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('marca').value = '';
+  document.getElementById('tipo').value  = '';
+  document.getElementById('marcaOtro').style.display = 'none';
+  quitarFoto();
+  // Scroll arriba
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ═══════════════════════════════════════════════════════
-// HELPERS
-// ═══════════════════════════════════════════════════════
-let toastT;
+// ══════════════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════════════
+let toastTimer;
 function toast(msg, type) {
   const el = document.getElementById('toast');
   el.textContent = msg;
-  el.className = 'show ' + (type || '');
-  clearTimeout(toastT);
-  toastT = setTimeout(() => { el.className = ''; }, 3500);
-}
-
-function esc(s) {
-  return String(s||'')
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  el.className   = 'toast show ' + (type || '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.className = 'toast'; }, 4000);
 }
 </script>
 </body>

@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>+MARKA | Relevamiento</title>
+<link rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+<style>
+:root { --mk-dark:#1a1a2e; --mk-red:#D85A30; }
+*{box-sizing:border-box}
+body{background:#f5f4f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+     padding-bottom:100px;font-size:15px}
+
+/* Header */
+.mk-header{
+  background:var(--mk-dark);color:#fff;padding:13px 16px;
+  position:sticky;top:0;z-index:200;
+  display:flex;align-items:center;gap:10px;
+}
+.mk-logo{background:var(--mk-red);color:#fff;font-weight:700;font-size:13px;
+         padding:4px 10px;border-radius:6px;letter-spacing:.5px}
+.gps-pill{margin-left:auto;font-size:11px;padding:3px 9px;border-radius:20px;
+          background:rgba(255,255,255,.12);display:flex;align-items:center;gap:4px}
+.gps-pill.ok {background:rgba(29,158,117,.35);color:#5DCAA5}
+.gps-pill.err{background:rgba(216,90,48,.35); color:#f09070}
+
+/* Sección */
+.mk-card{background:#fff;border-radius:14px;border:1px solid #e8e5e0;
+         padding:16px;margin:12px 12px 0}
+.mk-label{font-size:11px;font-weight:600;text-transform:uppercase;
+          letter-spacing:.7px;color:#888;margin-bottom:10px}
+
+/* Controles */
+select.form-select,input.form-control{border-radius:9px;border:1px solid #ddd;font-size:14px}
+select.form-select:focus,input.form-control:focus{
+  border-color:#1a1a2e;box-shadow:0 0 0 3px rgba(26,26,46,.12)}
+
+/* Contadores */
+.cnt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.cnt-box{border:1px solid #e8e5e0;border-radius:11px;padding:10px 6px;text-align:center}
+.cnt-lbl{font-size:11px;color:#777;margin-bottom:6px}
+.cnt-ctrl{display:flex;align-items:center;justify-content:center;gap:8px}
+.cbtn{width:30px;height:30px;border-radius:50%;border:1px solid #ddd;
+      background:#f5f5f5;font-size:20px;line-height:1;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;color:#333;
+      -webkit-tap-highlight-color:transparent;user-select:none}
+.cbtn:active{background:#e0e0e0}
+.cval{font-size:22px;font-weight:600;min-width:30px}
+.total-lbl{text-align:right;font-size:12px;color:#666;margin-top:8px}
+.total-lbl strong{color:var(--mk-dark)}
+
+/* Productos */
+.prod-item{display:flex;align-items:center;padding:9px 0;
+           border-bottom:1px solid #f0ede8;gap:10px}
+.prod-item:last-child{border-bottom:none}
+.prod-name{flex:1;font-size:14px;line-height:1.3}
+.prod-brand{font-size:11px;color:#aaa;display:block}
+.qty{width:62px;text-align:center;border:1px solid #ddd;border-radius:8px;
+     padding:6px 4px;font-size:15px;font-weight:500;
+     -moz-appearance:textfield}
+.qty::-webkit-inner-spin-button{-webkit-appearance:none}
+
+/* Fotos */
+.photo-strip{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px}
+.photo-strip img{width:76px;height:76px;border-radius:10px;
+                 object-fit:cover;border:1px solid #ddd;flex-shrink:0}
+.add-photo{width:76px;height:76px;border-radius:10px;
+           border:2px dashed #ccc;background:transparent;
+           display:flex;flex-direction:column;align-items:center;
+           justify-content:center;gap:3px;cursor:pointer;
+           color:#aaa;font-size:11px;flex-shrink:0;
+           -webkit-tap-highlight-color:transparent}
+.add-photo:active{background:#f5f5f5}
+.upload-status{font-size:11px;margin-top:6px;color:#888;min-height:16px}
+
+/* Botón enviar fijo */
+.submit-wrap{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#fff;padding:12px 16px;
+  border-top:1px solid #e8e5e0;
+  z-index:100;
+}
+.submit-btn{
+  width:100%;padding:14px;background:var(--mk-dark);color:#fff;
+  border:none;border-radius:12px;font-size:15px;font-weight:600;
+  cursor:pointer;letter-spacing:.3px;
+}
+.submit-btn:disabled{opacity:.5}
+
+/* Toast */
+#toast{
+  position:fixed;bottom:76px;left:50%;
+  transform:translateX(-50%) translateY(30px);
+  opacity:0;background:var(--mk-dark);color:#fff;
+  padding:11px 22px;border-radius:30px;font-size:13px;
+  transition:opacity .25s,transform .25s;z-index:9999;
+  max-width:90vw;text-align:center;pointer-events:none;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.ok {background:#0F6E56}
+#toast.err{background:#8B2500}
+
+.spin{display:inline-block;width:15px;height:15px;border:2px solid #fff;
+      border-top-color:transparent;border-radius:50%;
+      animation:sp .7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* Skeleton loader */
+.skel{background:#f0ede8;border-radius:8px;height:44px;margin-bottom:8px;
+      animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="mk-header">
+  <span class="mk-logo">+MARKA</span>
+  <span style="font-size:14px;opacity:.85;font-weight:500">Relevamiento</span>
+  <span class="gps-pill" id="gpsPill">📍 GPS...</span>
+</div>
+
+<!-- 1. SUPERVISOR -->
+<div class="mk-card">
+  <div class="mk-label">Supervisor</div>
+  <select id="selSupervisor" class="form-select mb-2" onchange="onSupervisorChange()">
+    <option value="">— Seleccioná tu nombre —</option>
+  </select>
+  <div id="cedulaDisplay" style="font-size:12px;color:#888;display:none">
+    Cédula: <strong id="cedulaVal">—</strong>
+  </div>
+</div>
+
+<!-- 2. MARCA y PUNTO DE VENTA -->
+<div class="mk-card">
+  <div class="mk-label">Activación</div>
+  <div class="mb-3">
+    <label class="form-label fw-semibold" style="font-size:13px">Marca</label>
+    <select id="selMarca" class="form-select" onchange="onMarcaChange()">
+      <option value="">— Seleccioná marca —</option>
+    </select>
+  </div>
+  <div class="mb-3">
+    <label class="form-label fw-semibold" style="font-size:13px">Punto de Venta</label>
+    <select id="selPdv" class="form-select">
+      <option value="">— Primero elegí marca —</option>
+    </select>
+  </div>
+  <div class="row g-2">
+    <div class="col-6">
+      <label class="form-label fw-semibold" style="font-size:13px">Tipo de Activación</label>
+      <select id="selTipo" class="form-select">
+        <option value="">Seleccionar...</option>
+        <option>Degustación</option>
+        <option>Sorteo</option>
+        <option>Regalo por compra</option>
+        <option>Demostración</option>
+        <option>Sampling</option>
+        <option>Otro</option>
+      </select>
+    </div>
+    <div class="col-6">
+      <label class="form-label fw-semibold" style="font-size:13px">Temática</label>
+      <input id="inputTematica" type="text" class="form-control" placeholder="Ej: Verano 2025">
+    </div>
+  </div>
+</div>
+
+<!-- 3. ABORDAJES -->
+<div class="mk-card">
+  <div class="mk-label">Abordajes</div>
+  <div class="cnt-grid">
+    <div class="cnt-box">
+      <div class="cnt-lbl">Hombres</div>
+      <div class="cnt-ctrl">
+        <button class="cbtn" onclick="adj('h',-1)" aria-label="Menos">−</button>
+        <span class="cval" id="vh">0</span>
+        <button class="cbtn" onclick="adj('h',1)"  aria-label="Más">+</button>
+      </div>
+    </div>
+    <div class="cnt-box">
+      <div class="cnt-lbl">Mujeres</div>
+      <div class="cnt-ctrl">
+        <button class="cbtn" onclick="adj('m',-1)" aria-label="Menos">−</button>
+        <span class="cval" id="vm">0</span>
+        <button class="cbtn" onclick="adj('m',1)"  aria-label="Más">+</button>
+      </div>
+    </div>
+    <div class="cnt-box">
+      <div class="cnt-lbl">Niños</div>
+      <div class="cnt-ctrl">
+        <button class="cbtn" onclick="adj('n',-1)" aria-label="Menos">−</button>
+        <span class="cval" id="vn">0</span>
+        <button class="cbtn" onclick="adj('n',1)"  aria-label="Más">+</button>
+      </div>
+    </div>
+  </div>
+  <div class="total-lbl">Total: <strong id="totalAb">0</strong></div>
+</div>
+
+<!-- 4. VENTAS -->
+<div class="mk-card">
+  <div class="mk-label">Ventas concretadas</div>
+  <div id="prodContainer">
+    <div class="skel"></div><div class="skel"></div>
+  </div>
+  <div id="prodMsg" style="font-size:12px;color:#aaa;margin-top:6px;display:none">
+    Elegí una marca para ver los productos disponibles.
+  </div>
+</div>
+
+<!-- 5. FOTO -->
+<div class="mk-card">
+  <div class="mk-label">Foto del relevamiento</div>
+  <div class="photo-strip" id="photoStrip">
+    <button class="add-photo" onclick="triggerCam()" aria-label="Tomar foto">
+      <svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="2"
+           viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+        <circle cx="12" cy="13" r="4"/>
+      </svg>
+      Foto
+    </button>
+  </div>
+  <input type="file" id="camInput" accept="image/*" capture="environment"
+         style="display:none" onchange="handlePhoto(this)">
+  <div class="upload-status" id="uploadStatus"></div>
+</div>
+
+<!-- BOTÓN FIJO -->
+<div class="submit-wrap">
+  <button class="submit-btn" id="btnEnviar" onclick="enviarFormulario()">
+    Enviar Relevamiento
+  </button>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// ESTADO GLOBAL
+// ═══════════════════════════════════════════════════════
+const S = {
+  h:0, m:0, n:0,
+  supervisores: [],
+  productos: [],      // { marca, producto }
+  pdvs: [],           // { marca, local }
+  marcas: [],
+  fotoUrl: "",        // link a Drive (una sola foto)
+  fotoSubiendo: false,
+  lat: null, lng: null,
+};
+
+// ═══════════════════════════════════════════════════════
+// GPS
+// ═══════════════════════════════════════════════════════
+const gpsPill = document.getElementById('gpsPill');
+if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(
+    p => {
+      S.lat = p.coords.latitude.toFixed(6);
+      S.lng = p.coords.longitude.toFixed(6);
+      gpsPill.className = 'gps-pill ok';
+      gpsPill.textContent = '📍 ±' + Math.round(p.coords.accuracy) + 'm';
+    },
+    () => { gpsPill.className='gps-pill err'; gpsPill.textContent='📍 Sin GPS'; },
+    { enableHighAccuracy:true, timeout:10000 }
+  );
+}
+
+// ═══════════════════════════════════════════════════════
+// CARGA INICIAL DE DATOS
+// ═══════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  google.script.run
+    .withSuccessHandler(poblarFormulario)
+    .withFailureHandler(err => toast('Error al cargar datos: ' + err.message, 'err'))
+    .getDatosIniciales();
+});
+
+function poblarFormulario(data) {
+  if (!data.success) { toast('Error: ' + data.error, 'err'); return; }
+
+  S.supervisores = data.supervisores;
+  S.productos    = data.productos;
+  S.pdvs         = data.pdvs;
+  S.marcas       = data.marcas;
+
+  // Supervisores
+  const selSup = document.getElementById('selSupervisor');
+  selSup.innerHTML = '<option value="">— Seleccioná tu nombre —</option>' +
+    data.supervisores.map(s =>
+      `<option value="${esc(s.nombre)}" data-cedula="${esc(s.cedula)}">${esc(s.nombre)}</option>`
+    ).join('');
+
+  // Marcas
+  const selMarca = document.getElementById('selMarca');
+  selMarca.innerHTML = '<option value="">— Seleccioná marca —</option>' +
+    data.marcas.map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join('');
+
+  // Productos — mostrar mensaje inicial
+  document.getElementById('prodContainer').innerHTML = '';
+  document.getElementById('prodMsg').style.display = 'block';
+}
+
+// ═══════════════════════════════════════════════════════
+// SUPERVISOR
+// ═══════════════════════════════════════════════════════
+function onSupervisorChange() {
+  const sel = document.getElementById('selSupervisor');
+  const opt = sel.options[sel.selectedIndex];
+  const ced = opt ? opt.dataset.cedula : '';
+  const box = document.getElementById('cedulaDisplay');
+  if (ced) {
+    document.getElementById('cedulaVal').textContent = ced;
+    box.style.display = 'block';
+  } else {
+    box.style.display = 'none';
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// MARCA → PDV + PRODUCTOS
+// ═══════════════════════════════════════════════════════
+function onMarcaChange() {
+  const marca = document.getElementById('selMarca').value;
+
+  // PDV
+  const selPdv = document.getElementById('selPdv');
+  const pdvsFiltrados = S.pdvs.filter(p => p.marca === marca);
+  selPdv.innerHTML = pdvsFiltrados.length
+    ? '<option value="">— Seleccioná local —</option>' +
+        pdvsFiltrados.map(p => `<option value="${esc(p.local)}">${esc(p.local)}</option>`).join('')
+    : '<option value="">Sin locales para esta marca</option>';
+
+  // Productos
+  const cont = document.getElementById('prodContainer');
+  const msg  = document.getElementById('prodMsg');
+  const prods = S.productos.filter(p => p.marca === marca);
+
+  if (!marca) {
+    cont.innerHTML = '';
+    msg.style.display = 'block';
+    return;
+  }
+  msg.style.display = 'none';
+
+  if (!prods.length) {
+    cont.innerHTML = '<p style="font-size:13px;color:#aaa">Sin productos para esta marca.</p>';
+    return;
+  }
+
+  cont.innerHTML = prods.map(p => `
+    <div class="prod-item">
+      <div class="prod-name">
+        ${esc(p.producto)}
+        <span class="prod-brand">${esc(p.marca)}</span>
+      </div>
+      <input class="qty" type="number" min="0" value="0"
+             inputmode="numeric" pattern="[0-9]*"
+             data-prod="${esc(p.producto)}" aria-label="Cantidad ${esc(p.producto)}">
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// CONTADORES
+// ═══════════════════════════════════════════════════════
+function adj(k, d) {
+  S[k] = Math.max(0, S[k] + d);
+  document.getElementById('v' + k).textContent = S[k];
+  document.getElementById('totalAb').textContent = S.h + S.m + S.n;
+}
+
+// ═══════════════════════════════════════════════════════
+// CÁMARA Y FOTO
+// ═══════════════════════════════════════════════════════
+function triggerCam() { document.getElementById('camInput').click(); }
+
+function handlePhoto(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => comprimirYSubir(e.target.result, file.name);
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+function comprimirYSubir(dataUrl, nombre) {
+  const img = new Image();
+  img.onload = () => {
+    const MAX = 1280;
+    let w = img.width, h = img.height;
+    if (w > MAX || h > MAX) {
+      if (w >= h) { h = Math.round(h * MAX / w); w = MAX; }
+      else        { w = Math.round(w * MAX / h); h = MAX; }
+    }
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    c.getContext('2d').drawImage(img, 0, 0, w, h);
+    const b64 = c.toDataURL('image/jpeg', 0.78);
+
+    // Preview
+    const strip = document.getElementById('photoStrip');
+    // Remover foto anterior si existe
+    strip.querySelectorAll('img').forEach(el => el.remove());
+    const imgEl = document.createElement('img');
+    imgEl.src = b64; imgEl.alt = 'Foto';
+    strip.insertBefore(imgEl, strip.querySelector('.add-photo'));
+
+    // Subir
+    S.fotoSubiendo = true;
+    S.fotoUrl = '';
+    setStatus('⏫ Subiendo foto a Drive...');
+
+    const marca = document.getElementById('selMarca').value || 'Sin Marca';
+    const fecha = new Date().toISOString().slice(0,10);
+    const fileName = 'foto_' + Date.now() + '.jpg';
+
+    google.script.run
+      .withSuccessHandler(res => {
+        S.fotoSubiendo = false;
+        if (res.success) {
+          S.fotoUrl = res.url;
+          setStatus('✅ Foto guardada correctamente.');
+        } else {
+          setStatus('⚠️ Error al subir foto: ' + res.error);
+        }
+      })
+      .withFailureHandler(err => {
+        S.fotoSubiendo = false;
+        setStatus('⚠️ Error: ' + err.message);
+      })
+      .subirFoto({ base64: b64, fileName, marca, fecha });
+  };
+  img.src = dataUrl;
+}
+
+function setStatus(msg) {
+  document.getElementById('uploadStatus').textContent = msg;
+}
+
+// ═══════════════════════════════════════════════════════
+// ENVIAR
+// ═══════════════════════════════════════════════════════
+function enviarFormulario() {
+  // Validar campos obligatorios
+  const supervisor  = document.getElementById('selSupervisor').value;
+  const marca       = document.getElementById('selMarca').value;
+  const pdv         = document.getElementById('selPdv').value;
+  const tipo        = document.getElementById('selTipo').value;
+  const tematica    = document.getElementById('inputTematica').value.trim();
+
+  const opt = document.getElementById('selSupervisor').options;
+  const cedula = opt[opt.selectedIndex]?.dataset?.cedula || '';
+
+  if (!supervisor) { toast('Seleccioná tu nombre',              'err'); return; }
+  if (!marca)      { toast('Seleccioná una marca',              'err'); return; }
+  if (!pdv)        { toast('Seleccioná el punto de venta',      'err'); return; }
+  if (!tipo)       { toast('Seleccioná el tipo de activación',  'err'); return; }
+  if (S.h + S.m + S.n === 0) { toast('Registrá al menos un abordaje', 'err'); return; }
+  if (S.fotoSubiendo) { toast('Esperá, la foto se está subiendo...', 'err'); return; }
+
+  // Armar texto de ventas
+  const ventas = [];
+  document.querySelectorAll('.qty').forEach(el => {
+    const qty = parseInt(el.value) || 0;
+    if (qty > 0) ventas.push(el.dataset.prod + ' x' + qty);
+  });
+
+  const btn = document.getElementById('btnEnviar');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>Enviando...';
+
+  const payload = {
+    supervisor,
+    cedula,
+    fecha: new Date().toLocaleDateString('es-PY'),
+    marca,
+    tipoActivacion: tipo,
+    tematica,
+    puntoDeVenta: pdv,
+    hombres:  S.h,
+    mujeres:  S.m,
+    ninos:    S.n,
+    ventasTexto: ventas.join(', ') || '—',
+    fotoUrl:  S.fotoUrl,
+    lat:  S.lat || '',
+    lng:  S.lng || '',
+  };
+
+  google.script.run
+    .withSuccessHandler(res => {
+      btn.disabled = false;
+      btn.textContent = 'Enviar Relevamiento';
+      if (res.success) {
+        toast('✓ Relevamiento guardado correctamente', 'ok');
+        resetFormulario();
+      } else {
+        toast('Error: ' + res.error, 'err');
+      }
+    })
+    .withFailureHandler(err => {
+      btn.disabled = false;
+      btn.textContent = 'Enviar Relevamiento';
+      toast('Error al guardar: ' + err.message, 'err');
+    })
+    .guardarRelevamiento(payload);
+}
+
+// ═══════════════════════════════════════════════════════
+// RESET
+// ═══════════════════════════════════════════════════════
+function resetFormulario() {
+  document.getElementById('selSupervisor').value = '';
+  document.getElementById('cedulaDisplay').style.display = 'none';
+  document.getElementById('selMarca').value = '';
+  document.getElementById('selPdv').innerHTML = '<option value="">— Primero elegí marca —</option>';
+  document.getElementById('selTipo').value = '';
+  document.getElementById('inputTematica').value = '';
+  S.h = S.m = S.n = 0;
+  ['vh','vm','vn'].forEach(id => document.getElementById(id).textContent = '0');
+  document.getElementById('totalAb').textContent = '0';
+  document.getElementById('prodContainer').innerHTML = '';
+  document.getElementById('prodMsg').style.display = 'block';
+  document.getElementById('photoStrip').querySelectorAll('img').forEach(e=>e.remove());
+  S.fotoUrl = ''; S.fotoSubiendo = false;
+  setStatus('');
+}
+
+// ═══════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════
+let toastT;
+function toast(msg, type) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'show ' + (type || '');
+  clearTimeout(toastT);
+  toastT = setTimeout(() => { el.className = ''; }, 3500);
+}
+
+function esc(s) {
+  return String(s||'')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>

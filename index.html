@@ -323,19 +323,19 @@ select.err,input.err{border-color:var(--rojo);box-shadow:0 0 0 3px rgba(200,16,4
       <div class="personas-grid">
         <div class="personas-box">
           <label for="inpH">👨 Hombres</label>
-          <input type="number" id="inpH" min="0" value="0"
+          <input type="number" id="inpH" min="0" value="" placeholder="0"
                  inputmode="numeric" pattern="[0-9]*"
                  oninput="actualizarTotal()">
         </div>
         <div class="personas-box">
           <label for="inpM">👩 Mujeres</label>
-          <input type="number" id="inpM" min="0" value="0"
+          <input type="number" id="inpM" min="0" value="" placeholder="0"
                  inputmode="numeric" pattern="[0-9]*"
                  oninput="actualizarTotal()">
         </div>
         <div class="personas-box">
           <label for="inpN">👧 Niños</label>
-          <input type="number" id="inpN" min="0" value="0"
+          <input type="number" id="inpN" min="0" value="" placeholder="0"
                  inputmode="numeric" pattern="[0-9]*"
                  oninput="actualizarTotal()">
         </div>
@@ -368,7 +368,7 @@ select.err,input.err{border-color:var(--rojo);box-shadow:0 0 0 3px rgba(200,16,4
             <div class="dropdown-prod" id="dropProd"></div>
           </div>
           <div class="qty-inline">
-            <input type="number" id="qtyProd" min="1" value="1"
+            <input type="number" id="qtyProd" min="1" value="" placeholder="Cant."
                    inputmode="numeric" pattern="[0-9]*" placeholder="Cant.">
           </div>
           <button class="btn-agregar" onclick="agregarDesdeBoton()">+ Agregar</button>
@@ -431,7 +431,7 @@ select.err,input.err{border-color:var(--rojo);box-shadow:0 0 0 3px rgba(200,16,4
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbxGGHMARfZwxLLpFo2yFyP_RFilSPqD_8QVqjHG5f4lDiS6B9F4gL7NMAicybEf0nJ6/exec";
+const API = "https://script.google.com/macros/s/AKfycbwvU0LiDl03MXorFsEqYq6mNzwSVgEMV_VnUddJaXfPb9YasIHlmzX8_03JPcL06uo7/exec";
 const TOTAL = 5;
 
 const S = {

@@ -2,316 +2,214 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>+MARKA | Relevamiento</title>
 <style>
-/* ── Reset & base ── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --dark:    #1a1a2e;
-  --red:     #D85A30;
-  --surface: #f5f4f0;
-  --white:   #ffffff;
-  --border:  #e2dfd8;
-  --text:    #1a1a1a;
-  --muted:   #888;
-  --radius:  12px;
-  --green:   #0F6E56;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --dark:#1a1a2e;--red:#D85A30;--green:#0a7c5c;
+  --bg:#f2f1ed;--white:#fff;--border:#dedad2;
+  --text:#1a1a1a;--muted:#888;--r:12px;
+}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:16px;padding-bottom:90px;
+  -webkit-font-smoothing:antialiased;
 }
 
-body {
-  background: var(--surface);
-  color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 16px;
-  line-height: 1.5;
-  padding-bottom: 100px;
-  -webkit-font-smoothing: antialiased;
+/* Header */
+.hdr{
+  background:var(--dark);color:#fff;
+  padding:13px 16px;display:flex;align-items:center;gap:10px;
+  position:sticky;top:0;z-index:50;
+}
+.logo{
+  background:var(--red);color:#fff;font-weight:700;
+  font-size:13px;padding:4px 10px;border-radius:6px;letter-spacing:.5px;
+}
+.hdr-title{font-size:14px;font-weight:500;opacity:.9}
+.gps{
+  margin-left:auto;font-size:11px;padding:3px 9px;
+  border-radius:20px;background:rgba(255,255,255,.12);
+  white-space:nowrap;
+}
+.gps.ok {background:rgba(10,124,92,.4);color:#4ecba5}
+.gps.err{background:rgba(213,90,48,.4);color:#f09878}
+
+/* Cards */
+.card{
+  background:var(--white);border-radius:var(--r);
+  border:1px solid var(--border);padding:18px 16px;
+  margin:12px 12px 0;
+}
+.card-ttl{
+  font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.9px;color:var(--muted);margin-bottom:14px;
 }
 
-/* ── Header ── */
-.header {
-  background: var(--dark);
-  color: #fff;
-  padding: 14px 18px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
+/* Campos */
+.fld{margin-bottom:14px}
+.fld:last-child{margin-bottom:0}
+.fld label{
+  display:block;font-size:13px;font-weight:600;
+  color:#444;margin-bottom:5px;
 }
-.logo {
-  background: var(--red);
-  color: #fff;
-  font-weight: 700;
-  font-size: 13px;
-  padding: 5px 11px;
-  border-radius: 7px;
-  letter-spacing: .5px;
+.req{color:var(--red)}
+input[type=text],input[type=number],textarea,select{
+  width:100%;padding:12px 13px;
+  border:1.5px solid var(--border);border-radius:9px;
+  font-size:15px;color:var(--text);background:var(--white);
+  outline:none;transition:border-color .2s,box-shadow .2s;
+  appearance:none;-webkit-appearance:none;
+  font-family:inherit;
 }
-.header-title { font-size: 15px; font-weight: 500; opacity: .9; }
-.gps-badge {
-  margin-left: auto;
-  font-size: 11px;
-  padding: 4px 10px;
-  border-radius: 20px;
-  background: rgba(255,255,255,.12);
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  transition: background .3s, color .3s;
+input:focus,textarea:focus,select:focus{
+  border-color:var(--dark);
+  box-shadow:0 0 0 3px rgba(26,26,46,.1);
 }
-.gps-badge.ok  { background: rgba(15,110,86,.4);  color: #5DCAA5; }
-.gps-badge.err { background: rgba(216,90,48,.4);  color: #f09070; }
+input.err,select.err{
+  border-color:var(--red);
+  box-shadow:0 0 0 3px rgba(213,90,48,.12);
+}
+textarea{resize:vertical;min-height:76px;line-height:1.5}
+select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;
+  padding-right:36px;cursor:pointer;
+}
+.emsg{font-size:12px;color:var(--red);margin-top:4px;display:none}
+.emsg.show{display:block}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:380px){.row2{grid-template-columns:1fr}}
 
-/* ── Cards ── */
-.card {
-  background: var(--white);
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  padding: 18px 16px;
-  margin: 12px 12px 0;
+/* Foto */
+.foto-zone{
+  border:2px dashed var(--border);border-radius:var(--r);
+  padding:24px 16px;text-align:center;cursor:pointer;
+  transition:border-color .2s,background .2s;position:relative;
+  background:var(--bg);
 }
-.card-title {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .8px;
-  color: var(--muted);
-  margin-bottom: 14px;
+.foto-zone:active{background:#eae9e4}
+.foto-zone input{
+  position:absolute;inset:0;opacity:0;
+  cursor:pointer;width:100%;height:100%;
 }
-
-/* ── Campos ── */
-.field { margin-bottom: 14px; }
-.field:last-child { margin-bottom: 0; }
-.field label {
-  display: block;
-  font-size: 13px;
-  font-weight: 600;
-  color: #444;
-  margin-bottom: 5px;
+.foto-icon{font-size:38px;margin-bottom:6px;display:block}
+.foto-zone strong{font-size:15px;color:var(--dark);display:block;margin-bottom:3px}
+.foto-zone p{font-size:13px;color:var(--muted)}
+.foto-prev{display:none;position:relative;margin-top:12px}
+.foto-prev img{
+  width:100%;max-height:200px;object-fit:cover;
+  border-radius:10px;border:1px solid var(--border);display:block;
 }
-.field label .req { color: var(--red); margin-left: 2px; }
-
-input[type="text"],
-input[type="number"],
-textarea,
-select {
-  width: 100%;
-  padding: 11px 13px;
-  border: 1.5px solid var(--border);
-  border-radius: 9px;
-  font-size: 15px;
-  color: var(--text);
-  background: var(--white);
-  outline: none;
-  transition: border-color .2s, box-shadow .2s;
-  appearance: none;
-  -webkit-appearance: none;
+.foto-del{
+  position:absolute;top:8px;right:8px;
+  background:rgba(0,0,0,.6);color:#fff;border:none;
+  border-radius:50%;width:30px;height:30px;font-size:17px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
 }
-input:focus, textarea:focus, select:focus {
-  border-color: var(--dark);
-  box-shadow: 0 0 0 3px rgba(26,26,46,.1);
-}
-input.error, select.error, textarea.error {
-  border-color: var(--red);
-  box-shadow: 0 0 0 3px rgba(216,90,48,.12);
-}
-textarea { resize: vertical; min-height: 80px; }
-select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  padding-right: 36px;
+.foto-status{
+  font-size:12px;color:var(--muted);margin-top:7px;
+  text-align:center;min-height:16px;
 }
 
-/* ── Dos columnas ── */
-.row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+/* Botón fijo */
+.bar{
+  position:fixed;bottom:0;left:0;right:0;
+  padding:11px 16px;background:var(--white);
+  border-top:1px solid var(--border);z-index:50;
+}
+.btn{
+  width:100%;padding:15px;background:var(--dark);color:#fff;
+  border:none;border-radius:var(--r);font-size:16px;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:opacity .2s;
+}
+.btn:disabled{opacity:.5;cursor:not-allowed}
 
-/* ── Foto ── */
-.photo-area {
-  border: 2px dashed var(--border);
-  border-radius: var(--radius);
-  padding: 20px 16px;
-  text-align: center;
-  cursor: pointer;
-  transition: border-color .2s, background .2s;
-  position: relative;
+/* Spinner */
+.spin{
+  width:18px;height:18px;border:2.5px solid rgba(255,255,255,.35);
+  border-top-color:#fff;border-radius:50%;
+  animation:ro .7s linear infinite;flex-shrink:0;
 }
-.photo-area:hover, .photo-area.dragover {
-  border-color: var(--dark);
-  background: #f8f8f8;
-}
-.photo-area input {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  cursor: pointer;
-  width: 100%;
-  height: 100%;
-}
-.photo-icon { font-size: 36px; margin-bottom: 6px; }
-.photo-area p { font-size: 14px; color: var(--muted); }
-.photo-area strong { display: block; font-size: 14px; color: var(--dark); margin-bottom: 4px; }
-.photo-preview {
-  margin-top: 14px;
-  display: none;
-  position: relative;
-}
-.photo-preview img {
-  width: 100%;
-  max-height: 220px;
-  object-fit: cover;
-  border-radius: 9px;
-  border: 1px solid var(--border);
-}
-.remove-photo {
-  position: absolute;
-  top: 8px; right: 8px;
-  background: rgba(0,0,0,.55);
-  color: #fff;
-  border: none;
-  border-radius: 50%;
-  width: 28px; height: 28px;
-  font-size: 16px;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-}
-.upload-status {
-  font-size: 12px;
-  color: var(--muted);
-  margin-top: 8px;
-  min-height: 18px;
-  text-align: center;
-}
+@keyframes ro{to{transform:rotate(360deg)}}
 
-/* ── Botón enviar ── */
-.submit-wrap {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  padding: 12px 16px;
-  background: var(--white);
-  border-top: 1px solid var(--border);
-  z-index: 100;
+/* Modal resultado */
+.overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.55);
+  z-index:200;display:flex;align-items:center;justify-content:center;
+  padding:20px;opacity:0;pointer-events:none;transition:opacity .25s;
 }
-.btn-submit {
-  width: 100%;
-  padding: 15px;
-  background: var(--dark);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius);
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  letter-spacing: .3px;
-  transition: background .2s, opacity .2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+.overlay.show{opacity:1;pointer-events:all}
+.modal{
+  background:var(--white);border-radius:18px;
+  padding:28px 24px;text-align:center;max-width:320px;width:100%;
 }
-.btn-submit:disabled { opacity: .55; cursor: not-allowed; }
-.btn-submit:not(:disabled):active { background: #2e2e5a; }
-
-/* ── Toast ── */
-.toast {
-  position: fixed;
-  bottom: 76px; left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  opacity: 0;
-  background: var(--dark);
-  color: #fff;
-  padding: 12px 24px;
-  border-radius: 30px;
-  font-size: 14px;
-  font-weight: 500;
-  transition: opacity .25s, transform .25s;
-  z-index: 9999;
-  max-width: 88vw;
-  text-align: center;
-  pointer-events: none;
+.modal-icon{font-size:48px;margin-bottom:12px}
+.modal h2{font-size:20px;font-weight:700;margin-bottom:8px}
+.modal p{font-size:14px;color:var(--muted);margin-bottom:20px}
+.modal-btn{
+  display:block;width:100%;padding:13px;
+  background:var(--dark);color:#fff;border:none;
+  border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;
 }
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-.toast.ok   { background: var(--green); }
-.toast.err  { background: #8B2500; }
-
-/* ── Spinner ── */
-.spinner {
-  width: 18px; height: 18px;
-  border: 2.5px solid rgba(255,255,255,.4);
-  border-top-color: #fff;
-  border-radius: 50%;
-  animation: spin .7s linear infinite;
-  flex-shrink: 0;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* ── Error msgs ── */
-.err-msg {
-  font-size: 12px;
-  color: var(--red);
-  margin-top: 4px;
-  display: none;
-}
-.err-msg.show { display: block; }
-
-/* ── Responsive ── */
-@media (max-width: 400px) {
-  .row-2 { grid-template-columns: 1fr; }
-}
+.modal-btn.err-btn{background:var(--red)}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<header class="header">
+<!-- ═══ HEADER ═══ -->
+<header class="hdr">
   <span class="logo">+MARKA</span>
-  <span class="header-title">Relevamiento de Activación</span>
-  <span class="gps-badge" id="gpsBadge">📍 GPS...</span>
+  <span class="hdr-title">Relevamiento de Activación</span>
+  <span class="gps" id="gps">📍 GPS...</span>
 </header>
 
-<!-- SECCIÓN 1: Quién y dónde -->
+<!-- ═══ SECCIÓN 1: Supervisor y Local ═══ -->
 <div class="card">
-  <div class="card-title">Datos del relevamiento</div>
+  <div class="card-ttl">¿Quién y dónde?</div>
 
-  <div class="field">
+  <div class="fld">
     <label for="supervisor">Supervisor <span class="req">*</span></label>
-    <input type="text" id="supervisor" placeholder="Tu nombre completo"
+    <input type="text" id="supervisor"
+           placeholder="Tu nombre completo"
            autocomplete="name" autocapitalize="words">
-    <div class="err-msg" id="err-supervisor">Campo obligatorio</div>
+    <div class="emsg" id="e-supervisor">Ingresá tu nombre</div>
   </div>
 
-  <div class="field">
+  <div class="fld">
     <label for="local">Local visitado <span class="req">*</span></label>
-    <input type="text" id="local" placeholder="Nombre o dirección del local"
+    <input type="text" id="local"
+           placeholder="Nombre del local o dirección"
            autocapitalize="words">
-    <div class="err-msg" id="err-local">Campo obligatorio</div>
+    <div class="emsg" id="e-local">Ingresá el local</div>
   </div>
 </div>
 
-<!-- SECCIÓN 2: Activación -->
+<!-- ═══ SECCIÓN 2: Activación ═══ -->
 <div class="card">
-  <div class="card-title">Información de la activación</div>
+  <div class="card-ttl">Datos de la activación</div>
 
-  <div class="field">
+  <div class="fld">
     <label for="marca">Marca <span class="req">*</span></label>
-    <select id="marca" onchange="onMarcaChange()">
+    <select id="marca" onchange="chkMarca()">
       <option value="">— Seleccioná la marca —</option>
       <option>Marca A</option>
       <option>Marca B</option>
       <option>Marca C</option>
-      <option value="__otro__">Otra...</option>
+      <option value="__otro">Otra marca...</option>
     </select>
-    <input type="text" id="marcaOtro" placeholder="Escribí la marca"
-           style="display:none; margin-top:8px">
-    <div class="err-msg" id="err-marca">Campo obligatorio</div>
+    <input type="text" id="marcaOtro"
+           placeholder="Escribí la marca"
+           autocapitalize="words"
+           style="display:none;margin-top:8px">
+    <div class="emsg" id="e-marca">Seleccioná o escribí la marca</div>
   </div>
 
-  <div class="row-2">
-    <div class="field">
+  <div class="row2">
+    <div class="fld">
       <label for="tipo">Tipo de activación <span class="req">*</span></label>
       <select id="tipo">
         <option value="">Seleccionar...</option>
@@ -323,286 +221,90 @@ select {
         <option>Exhibición</option>
         <option>Otro</option>
       </select>
-      <div class="err-msg" id="err-tipo">Campo obligatorio</div>
+      <div class="emsg" id="e-tipo">Seleccioná el tipo</div>
     </div>
-
-    <div class="field">
+    <div class="fld">
       <label for="personas">Personas abordadas <span class="req">*</span></label>
-      <input type="number" id="personas" min="0" placeholder="0"
+      <input type="number" id="personas"
+             min="0" placeholder="0"
              inputmode="numeric" pattern="[0-9]*">
-      <div class="err-msg" id="err-personas">Ingresá un número</div>
+      <div class="emsg" id="e-personas">Ingresá un número</div>
     </div>
   </div>
 
-  <div class="field">
+  <div class="fld">
     <label for="tematica">Temática de la activación</label>
-    <input type="text" id="tematica" placeholder="Ej: Verano 2025, Lanzamiento..."
+    <input type="text" id="tematica"
+           placeholder="Ej: Verano 2025, Lanzamiento X..."
            autocapitalize="sentences">
   </div>
 
-  <div class="field">
+  <div class="fld">
     <label for="ventas">Ventas concretadas — productos</label>
     <textarea id="ventas"
-      placeholder="Ej: Producto A x5, Producto B x2&#10;Podés listar varios productos"></textarea>
+      placeholder="Ej: Producto A x5&#10;Producto B x2"></textarea>
   </div>
 </div>
 
-<!-- SECCIÓN 3: Foto -->
+<!-- ═══ SECCIÓN 3: Foto ═══ -->
 <div class="card">
-  <div class="card-title">Foto del relevamiento</div>
-  <div class="photo-area" id="photoArea">
-    <input type="file" id="fotoInput" accept="image/*" capture="environment"
-           onchange="handleFoto(this)" aria-label="Seleccionar o tomar foto">
-    <div class="photo-icon">📷</div>
-    <strong>Tomar foto o seleccionar</strong>
+  <div class="card-ttl">Foto del relevamiento</div>
+  <div class="foto-zone" id="fotoZone">
+    <input type="file" id="fotoInput"
+           accept="image/*" capture="environment"
+           onchange="onFoto(this)"
+           aria-label="Tomar o seleccionar foto">
+    <span class="foto-icon">📷</span>
+    <strong>Tomar foto</strong>
     <p>Toca para usar la cámara del celular</p>
   </div>
-  <div class="photo-preview" id="photoPreview">
-    <img id="photoImg" src="" alt="Vista previa">
-    <button class="remove-photo" onclick="quitarFoto()" aria-label="Quitar foto">✕</button>
+  <div class="foto-prev" id="fotoPrev">
+    <img id="fotoImg" src="" alt="Vista previa de la foto">
+    <button class="foto-del" onclick="borrarFoto()" aria-label="Quitar foto">✕</button>
   </div>
-  <div class="upload-status" id="uploadStatus"></div>
+  <div class="foto-status" id="fotoStatus"></div>
 </div>
 
-<!-- BOTÓN FIJO -->
-<div class="submit-wrap">
-  <button class="btn-submit" id="btnEnviar" onclick="enviar()">
+<!-- ═══ BOTÓN FIJO ═══ -->
+<div class="bar">
+  <button class="btn" id="btnEnviar" onclick="enviar()">
     Enviar Relevamiento
   </button>
 </div>
 
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
+<!-- ═══ MODAL RESULTADO ═══ -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-icon" id="mIcon"></div>
+    <h2 id="mTitulo"></h2>
+    <p id="mMensaje"></p>
+    <button class="modal-btn" id="mBtn" onclick="cerrarModal()">Aceptar</button>
+  </div>
+</div>
 
 <script>
-// ══════════════════════════════════════════════════════
-// CONFIGURACIÓN — Reemplazá con tu URL de Apps Script
-// ══════════════════════════════════════════════════════
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/1zkymKKxo4a2bxHUjJLJJvCiiTkx5TcfGTfU0atvXeys/exec";
+// ══════════════════════════════════════════════════════════════
+//  ⚠️  REEMPLAZÁ ESTA URL CON LA DE TU IMPLEMENTACIÓN
+// ══════════════════════════════════════════════════════════════
+const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbx0rhyQZ1Bf8neXz66HKNLSUDF6IhWQL6V8RiO1sReSPGuV-BOndz-X-J9zV7DpyxO6/exec";
 
-// ══════════════════════════════════════════════════════
-// ESTADO
-// ══════════════════════════════════════════════════════
-let fotoBase64 = null;
-let gpsData    = { lat: null, lng: null };
-
-// ══════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
 // GPS
-// ══════════════════════════════════════════════════════
-const gpsBadge = document.getElementById('gpsBadge');
+// ══════════════════════════════════════════════════════════════
+let GPS = { lat: "", lng: "" };
+const gpsEl = document.getElementById("gps");
 
 if (navigator.geolocation) {
   navigator.geolocation.getCurrentPosition(
-    pos => {
-      gpsData.lat = pos.coords.latitude.toFixed(6);
-      gpsData.lng = pos.coords.longitude.toFixed(6);
-      gpsBadge.className = 'gps-badge ok';
-      gpsBadge.textContent = '📍 ±' + Math.round(pos.coords.accuracy) + 'm';
+    p => {
+      GPS.lat = p.coords.latitude.toFixed(6);
+      GPS.lng = p.coords.longitude.toFixed(6);
+      gpsEl.className = "gps ok";
+      gpsEl.textContent = "📍 ±" + Math.round(p.coords.accuracy) + "m";
     },
-    () => {
-      gpsBadge.className = 'gps-badge err';
-      gpsBadge.textContent = '📍 Sin GPS';
-    },
-    { enableHighAccuracy: true, timeout: 10000 }
+    () => { gpsEl.className = "gps err"; gpsEl.textContent = "📍 Sin GPS"; },
+    { enableHighAccuracy: true, timeout: 12000 }
   );
-} else {
-  gpsBadge.textContent = '📍 No disponible';
 }
 
-// ══════════════════════════════════════════════════════
-// SELECT "Otra marca"
-// ══════════════════════════════════════════════════════
-function onMarcaChange() {
-  const sel   = document.getElementById('marca');
-  const extra = document.getElementById('marcaOtro');
-  extra.style.display = sel.value === '__otro__' ? 'block' : 'none';
-  if (sel.value !== '__otro__') extra.value = '';
-}
-
-// ══════════════════════════════════════════════════════
-// FOTO
-// ══════════════════════════════════════════════════════
-function handleFoto(input) {
-  const file = input.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = e => {
-    comprimir(e.target.result, b64 => {
-      fotoBase64 = b64;
-      document.getElementById('photoImg').src    = b64;
-      document.getElementById('photoPreview').style.display = 'block';
-      document.getElementById('photoArea').style.display    = 'none';
-      document.getElementById('uploadStatus').textContent   =
-        '✅ Foto lista — se subirá al enviar el formulario';
-    });
-  };
-  reader.readAsDataURL(file);
-  input.value = '';
-}
-
-function quitarFoto() {
-  fotoBase64 = null;
-  document.getElementById('photoPreview').style.display = 'none';
-  document.getElementById('photoArea').style.display    = 'block';
-  document.getElementById('uploadStatus').textContent   = '';
-}
-
-function comprimir(dataUrl, callback) {
-  const img = new Image();
-  img.onload = () => {
-    const MAX = 1280;
-    let w = img.width, h = img.height;
-    if (w > MAX || h > MAX) {
-      if (w >= h) { h = Math.round(h * MAX / w); w = MAX; }
-      else        { w = Math.round(w * MAX / h); h = MAX; }
-    }
-    const canvas = document.createElement('canvas');
-    canvas.width = w; canvas.height = h;
-    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-    callback(canvas.toDataURL('image/jpeg', 0.78));
-  };
-  img.src = dataUrl;
-}
-
-// ══════════════════════════════════════════════════════
-// VALIDACIÓN
-// ══════════════════════════════════════════════════════
-function validar() {
-  let ok = true;
-
-  const reglas = [
-    { id: 'supervisor', errId: 'err-supervisor', test: v => v.trim().length >= 2 },
-    { id: 'local',      errId: 'err-local',      test: v => v.trim().length >= 2 },
-    { id: 'tipo',       errId: 'err-tipo',        test: v => v !== '' },
-    { id: 'personas',   errId: 'err-personas',    test: v => v !== '' && parseInt(v) >= 0 },
-  ];
-
-  // Marca
-  const marcaSel = document.getElementById('marca').value;
-  const marcaOtro = document.getElementById('marcaOtro').value.trim();
-  const marcaOk = marcaSel !== '' && (marcaSel !== '__otro__' || marcaOtro.length >= 1);
-  mostrarError('marca', 'err-marca', !marcaOk);
-  if (!marcaOk) ok = false;
-
-  reglas.forEach(r => {
-    const val = document.getElementById(r.id).value;
-    const valid = r.test(val);
-    mostrarError(r.id, r.errId, !valid);
-    if (!valid) ok = false;
-  });
-
-  return ok;
-}
-
-function mostrarError(fieldId, errId, show) {
-  const field = document.getElementById(fieldId);
-  const err   = document.getElementById(errId);
-  if (!field || !err) return;
-  field.classList.toggle('error', show);
-  err.classList.toggle('show', show);
-}
-
-// Limpiar error al escribir
-['supervisor','local','marca','tipo','personas'].forEach(id => {
-  const el = document.getElementById(id);
-  if (el) el.addEventListener('input', () => {
-    el.classList.remove('error');
-    const errEl = document.getElementById('err-' + id);
-    if (errEl) errEl.classList.remove('show');
-  });
-});
-
-// ══════════════════════════════════════════════════════
-// ENVIAR
-// ══════════════════════════════════════════════════════
-async function enviar() {
-  if (!validar()) {
-    toast('Completá los campos obligatorios', 'err');
-    // Scroll al primer error
-    const primer = document.querySelector('.error, .err-msg.show');
-    if (primer) primer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    return;
-  }
-
-  const marcaSel  = document.getElementById('marca').value;
-  const marcaFinal = marcaSel === '__otro__'
-    ? document.getElementById('marcaOtro').value.trim()
-    : marcaSel;
-
-  const payload = {
-    supervisor:     document.getElementById('supervisor').value.trim(),
-    local:          document.getElementById('local').value.trim(),
-    marca:          marcaFinal,
-    tipoActivacion: document.getElementById('tipo').value,
-    tematica:       document.getElementById('tematica').value.trim(),
-    personas:       document.getElementById('personas').value,
-    ventas:         document.getElementById('ventas').value.trim(),
-    foto:           fotoBase64 || null,
-    lat:            gpsData.lat,
-    lng:            gpsData.lng,
-  };
-
-  // UI: cargando
-  const btn = document.getElementById('btnEnviar');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> Enviando...';
-  document.getElementById('uploadStatus').textContent =
-    fotoBase64 ? '⏫ Subiendo foto y guardando datos...' : '';
-
-  try {
-    const res = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      // Apps Script necesita text/plain para evitar preflight CORS
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(payload),
-    });
-
-    const data = await res.json();
-
-    if (data.success) {
-      toast('✓ ' + data.message, 'ok');
-      resetForm();
-    } else {
-      toast('Error: ' + (data.error || 'Inténtalo de nuevo'), 'err');
-    }
-  } catch (err) {
-    toast('Error de conexión. Revisá tu internet.', 'err');
-    console.error(err);
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = 'Enviar Relevamiento';
-    document.getElementById('uploadStatus').textContent = '';
-  }
-}
-
-// ══════════════════════════════════════════════════════
-// RESET
-// ══════════════════════════════════════════════════════
-function resetForm() {
-  ['supervisor','local','tematica','ventas','marcaOtro','personas'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
-  });
-  document.getElementById('marca').value = '';
-  document.getElementById('tipo').value  = '';
-  document.getElementById('marcaOtro').style.display = 'none';
-  quitarFoto();
-  // Scroll arriba
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-// ══════════════════════════════════════════════════════
-// TOAST
-// ══════════════════════════════════════════════════════
-let toastTimer;
-function toast(msg, type) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className   = 'toast show ' + (type || '');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { el.className = 'toast'; }, 4000);
-}
-</script>
-</body>
-</html>
+// ════════════════════════════════════════

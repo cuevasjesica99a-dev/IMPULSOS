@@ -73,7 +73,29 @@ select.err,input.err{border-color:var(--rojo);box-shadow:0 0 0 3px rgba(200,16,4
   background-size:200% 100%;animation:sk 1.4s ease infinite;}
 @keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
-/* ── PERSONAS — inputs directos ── */
+/* INFO AUTOCOMPLETE */
+.info-activacion{background:var(--oscuro);border-radius:10px;padding:13px 15px;
+  margin-top:10px;display:none;}
+.info-activacion.on{display:block}
+.info-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.info-row:last-child{margin-bottom:0}
+.info-row .lbl{font-size:.7rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.06em;color:rgba(255,255,255,.5);min-width:80px}
+.info-row .val{font-size:.9rem;color:#fff;font-weight:600}
+.info-row .val.rojo{color:#ff6b7a}
+
+/* SELECTOR ACTIVACION */
+.activacion-item{border:1.5px solid var(--gris-2);border-radius:10px;padding:13px 14px;
+  margin-bottom:8px;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;}
+.activacion-item:hover{border-color:var(--oscuro);background:#f8f9fa}
+.activacion-item.selected{border-color:var(--rojo);background:#fff0f2;box-shadow:0 0 0 3px rgba(200,16,46,.1)}
+.activacion-item .act-marca{font-size:.75rem;font-weight:700;color:var(--rojo);
+  text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+.activacion-item .act-local{font-size:.95rem;font-weight:700;color:var(--oscuro)}
+.activacion-item .act-meta{font-size:.75rem;color:var(--gris-3);margin-top:3px}
+.activaciones-empty{text-align:center;padding:24px;color:var(--gris-3);font-size:.85rem}
+
+/* PERSONAS */
 .personas-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
 .personas-box{background:var(--gris-1);border:1.5px solid var(--gris-2);
   border-radius:11px;padding:12px 10px;text-align:center;}
@@ -90,7 +112,7 @@ select.err,input.err{border-color:var(--rojo);box-shadow:0 0 0 3px rgba(200,16,4
 .personas-total span{color:rgba(255,255,255,.7);font-size:.82rem;font-weight:500}
 .personas-total strong{color:#fff;font-size:1.2rem;font-weight:700}
 
-/* ── VENTAS — buscador + agregar ── */
+/* VENTAS */
 .agregar-wrap{display:flex;gap:8px;margin-bottom:14px;align-items:flex-start;}
 .buscar-campo{flex:1;position:relative;}
 .buscar-input{width:100%;padding:11px 14px 11px 38px;border:1.5px solid var(--gris-2);
@@ -111,11 +133,9 @@ select.err,input.err{border-color:var(--rojo);box-shadow:0 0 0 3px rgba(200,16,4
 .drop-item em{color:var(--rojo);font-style:normal;font-weight:700}
 .drop-item small{display:block;font-size:.72rem;color:var(--gris-3)}
 .drop-empty{padding:12px 14px;font-size:.85rem;color:var(--gris-3);text-align:center}
-
 .qty-inline{width:72px;flex-shrink:0;}
 .qty-inline input{text-align:center;font-size:1rem;font-weight:700;
   padding:11px 4px;border-radius:9px;}
-
 .btn-agregar{flex-shrink:0;padding:11px 14px;background:var(--oscuro);color:#fff;
   border:none;border-radius:9px;font-size:.88rem;font-weight:700;cursor:pointer;
   white-space:nowrap;-webkit-tap-highlight-color:transparent;transition:background .15s;}
@@ -258,7 +278,7 @@ select.err,input.err{border-color:var(--rojo);box-shadow:0 0 0 3px rgba(200,16,4
       <div class="field">
         <label>Supervisor <span class="req">*</span></label>
         <div id="skelSupervisor" class="skel"></div>
-        <select id="selSupervisor" style="display:none" onchange="limpiarErr('selSupervisor','eSupervisor')">
+        <select id="selSupervisor" style="display:none" onchange="onSupervisorChange()">
           <option value="">— Seleccioná tu nombre —</option>
         </select>
         <div class="emsg" id="eSupervisor">Seleccioná tu nombre</div>
@@ -276,41 +296,35 @@ select.err,input.err{border-color:var(--rojo);box-shadow:0 0 0 3px rgba(200,16,4
   <!-- PASO 1: ACTIVACIÓN -->
   <div class="paso" id="paso-1">
     <div class="card">
-      <div class="card-title">Datos de la Activación</div>
+      <div class="card-title">Seleccioná tu Activación</div>
       <div class="field">
-        <label>Marca <span class="req">*</span></label>
-        <div id="skelMarca" class="skel"></div>
-        <select id="selMarca" style="display:none" onchange="onMarcaChange()">
-          <option value="">— Seleccioná la marca —</option>
-        </select>
-        <div class="emsg" id="eMarca">Seleccioná la marca</div>
+        <label>Activaciones asignadas <span class="req">*</span></label>
+        <div id="skelActivaciones" class="skel" style="height:80px"></div>
+        <div id="listaActivaciones" style="display:none"></div>
+        <div class="emsg" id="eActivacion">Seleccioná una activación</div>
       </div>
-      <div class="field">
-        <label>Local <span class="req">*</span></label>
-        <div id="skelLocal" class="skel"></div>
-        <select id="selLocal" style="display:none" onchange="limpiarErr('selLocal','eLocal')">
-          <option value="">— Primero elegí la marca —</option>
-        </select>
-        <div class="emsg" id="eLocal">Seleccioná el local</div>
-      </div>
-      <div class="row2">
-        <div class="field">
-          <label>Tipo de activación <span class="req">*</span></label>
-          <select id="selTipo" onchange="limpiarErr('selTipo','eTipo')">
-            <option value="">Seleccionar...</option>
-            <option>Degustación</option>
-            <option>Sorteo</option>
-            <option>Regalo por compra</option>
-            <option>Demostración</option>
-            <option>Sampling</option>
-            <option>Exhibición</option>
-            <option>Otro</option>
-          </select>
-          <div class="emsg" id="eTipo">Seleccioná el tipo</div>
+
+      <!-- Info autocomplete -->
+      <div class="info-activacion" id="infoActivacion">
+        <div class="info-row">
+          <span class="lbl">Marca</span>
+          <span class="val rojo" id="infoMarca">—</span>
         </div>
-        <div class="field">
-          <label>Temática</label>
-          <input type="text" id="inputTematica" placeholder="Ej: Verano 2025" autocapitalize="sentences">
+        <div class="info-row">
+          <span class="lbl">Local</span>
+          <span class="val" id="infoLocal">—</span>
+        </div>
+        <div class="info-row">
+          <span class="lbl">Tipo</span>
+          <span class="val" id="infoTipo">—</span>
+        </div>
+        <div class="info-row">
+          <span class="lbl">Temática</span>
+          <span class="val" id="infoTematica">—</span>
+        </div>
+        <div class="info-row">
+          <span class="lbl">Impulsadora</span>
+          <span class="val" id="infoImpulsadora">—</span>
         </div>
       </div>
     </div>
@@ -323,20 +337,20 @@ select.err,input.err{border-color:var(--rojo);box-shadow:0 0 0 3px rgba(200,16,4
       <div class="personas-grid">
         <div class="personas-box">
           <label for="inpH">👨 Hombres</label>
-          <input type="number" id="inpH" min="0" value="" placeholder="0"
-                 inputmode="numeric" pattern="[0-9]*"
+          <input type="number" id="inpH" min="0" value=""
+                 inputmode="numeric" pattern="[0-9]*" placeholder="0"
                  oninput="actualizarTotal()">
         </div>
         <div class="personas-box">
           <label for="inpM">👩 Mujeres</label>
-          <input type="number" id="inpM" min="0" value="" placeholder="0"
-                 inputmode="numeric" pattern="[0-9]*"
+          <input type="number" id="inpM" min="0" value=""
+                 inputmode="numeric" pattern="[0-9]*" placeholder="0"
                  oninput="actualizarTotal()">
         </div>
         <div class="personas-box">
           <label for="inpN">👧 Niños</label>
-          <input type="number" id="inpN" min="0" value="" placeholder="0"
-                 inputmode="numeric" pattern="[0-9]*"
+          <input type="number" id="inpN" min="0" value=""
+                 inputmode="numeric" pattern="[0-9]*" placeholder="0"
                  oninput="actualizarTotal()">
         </div>
       </div>
@@ -354,8 +368,6 @@ select.err,input.err{border-color:var(--rojo);box-shadow:0 0 0 3px rgba(200,16,4
   <div class="paso" id="paso-3">
     <div class="card">
       <div class="card-title">Ventas Concretadas</div>
-
-      <!-- Buscador + cantidad + botón -->
       <div id="skelProductos" class="skel"></div>
       <div id="ventasUI" style="display:none">
         <div class="agregar-wrap">
@@ -368,13 +380,11 @@ select.err,input.err{border-color:var(--rojo);box-shadow:0 0 0 3px rgba(200,16,4
             <div class="dropdown-prod" id="dropProd"></div>
           </div>
           <div class="qty-inline">
-            <input type="number" id="qtyProd" min="1" value="" placeholder="Cant."
+            <input type="number" id="qtyProd" min="1" value=""
                    inputmode="numeric" pattern="[0-9]*" placeholder="Cant.">
           </div>
           <button class="btn-agregar" onclick="agregarDesdeBoton()">+ Agregar</button>
         </div>
-
-        <!-- Lista de productos agregados -->
         <div class="carrito-header" id="carritoHeader" style="display:none">
           <span class="carrito-titulo">Productos agregados</span>
           <span class="carrito-badge" id="carritoBadge">0</span>
@@ -431,7 +441,7 @@ select.err,input.err{border-color:var(--rojo);box-shadow:0 0 0 3px rgba(200,16,4
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbxFo7uHgkkh9vrDV5B0Ee8EmKHrtsI0G5YIMFWmPjqfxbtutwwapOjecqSnNCltWz1q/exec";
+const API = "https://script.google.com/macros/s/AKfycbyCIB_j78Sk1ATnd8fQ2e7OUZ9QymJAzYHLSSZwCyporMzq5QiD-x26aw3LEBD0BG20/exec";
 const TOTAL = 5;
 
 const S = {
@@ -439,8 +449,10 @@ const S = {
   fotos: [null,null,null,null,null],
   carrito: [],
   allProductos: [],
-  pdvs: [],
-  prodSeleccionado: null,   // { producto, marca }
+  allActivaciones: [],    // todas las activaciones de Hoja 2
+  activacionesSup: [],    // activaciones filtradas por supervisor
+  activacionSel: null,    // activación seleccionada
+  prodSeleccionado: null,
   lat: "", lng: "",
   enviando: false,
 };
@@ -482,43 +494,84 @@ function initGPS() {
 }
 
 function poblarFormulario(d) {
+  // Supervisores desde activaciones de Hoja 2
   const selSup = document.getElementById("selSupervisor");
   selSup.innerHTML = '<option value="">— Seleccioná tu nombre —</option>';
   (d.supervisores||[]).forEach(s => {
     const o=document.createElement("option"); o.value=o.textContent=s; selSup.appendChild(o);
   });
-  const selMarca = document.getElementById("selMarca");
-  selMarca.innerHTML = '<option value="">— Seleccioná la marca —</option>';
-  (d.marcas||[]).forEach(m => {
-    const o=document.createElement("option"); o.value=o.textContent=m; selMarca.appendChild(o);
-  });
-  S.allProductos = d.productos||[];
-  S.pdvs         = d.pdvs||[];
+
+  S.allActivaciones = d.activaciones || [];
+  S.allProductos    = d.productos    || [];
+
   mostrarSelects();
 }
 
 function mostrarSelects() {
-  [["skelSupervisor","selSupervisor"],["skelMarca","selMarca"],["skelLocal","selLocal"]].forEach(([sk,sel])=>{
-    const s=document.getElementById(sk),e=document.getElementById(sel);
-    if(s)s.style.display="none"; if(e)e.style.display="block";
-  });
+  const sk=document.getElementById("skelSupervisor");
+  const sel=document.getElementById("selSupervisor");
+  if(sk) sk.style.display="none";
+  if(sel) sel.style.display="block";
   document.getElementById("skelProductos").style.display="none";
   document.getElementById("ventasUI").style.display="block";
 }
 
-// ── MARCA → locales ──
-function onMarcaChange() {
-  limpiarErr("selMarca","eMarca");
-  const marca = document.getElementById("selMarca").value;
-  const selLocal = document.getElementById("selLocal");
-  const locales = S.pdvs.filter(p=>p.marca===marca).map(p=>p.local).sort();
-  selLocal.innerHTML = locales.length
-    ? '<option value="">— Seleccioná el local —</option>' +
-        locales.map(l=>`<option value="${_esc(l)}">${_esc(l)}</option>`).join("")
-    : '<option value="">Sin locales para esta marca</option>';
+// ── SUPERVISOR → filtra activaciones ──
+function onSupervisorChange() {
+  limpiarErr("selSupervisor","eSupervisor");
+  const sup = document.getElementById("selSupervisor").value;
+
+  // Filtrar activaciones de este supervisor
+  S.activacionesSup = S.allActivaciones.filter(a => a.supervisor === sup);
+  S.activacionSel   = null;
+
+  // Ocultar info
+  document.getElementById("infoActivacion").classList.remove("on");
+
+  // Mostrar lista
+  document.getElementById("skelActivaciones").style.display="none";
+  renderActivaciones();
 }
 
-// ── PERSONAS — inputs directos ──
+function renderActivaciones() {
+  const lista = document.getElementById("listaActivaciones");
+  lista.style.display = "block";
+
+  if (!S.activacionesSup.length) {
+    lista.innerHTML = '<div class="activaciones-empty">Sin activaciones asignadas para este supervisor</div>';
+    return;
+  }
+
+  lista.innerHTML = S.activacionesSup.map((a, i) => `
+    <div class="activacion-item" id="act-item-${i}" onclick="seleccionarActivacion(${i})">
+      <div class="act-marca">${_esc(a.marca)}</div>
+      <div class="act-local">${_esc(a.local)}</div>
+      <div class="act-meta">${_esc(a.tipo)}${a.tematica?' · '+_esc(a.tematica):''}</div>
+    </div>`).join("");
+}
+
+function seleccionarActivacion(i) {
+  // Deseleccionar anterior
+  document.querySelectorAll(".activacion-item").forEach(el => el.classList.remove("selected"));
+  document.getElementById("act-item-"+i).classList.add("selected");
+
+  S.activacionSel = S.activacionesSup[i];
+  limpiarErr("","eActivacion");
+
+  // Mostrar info autocomplete
+  const a = S.activacionSel;
+  document.getElementById("infoMarca").textContent      = a.marca      || "—";
+  document.getElementById("infoLocal").textContent      = a.local      || "—";
+  document.getElementById("infoTipo").textContent       = a.tipo       || "—";
+  document.getElementById("infoTematica").textContent   = a.tematica   || "—";
+  document.getElementById("infoImpulsadora").textContent= a.impulsadora|| "—";
+  document.getElementById("infoActivacion").classList.add("on");
+
+  // Filtrar productos por la marca seleccionada
+  // (para el paso de ventas)
+}
+
+// ── PERSONAS ──
 function actualizarTotal() {
   const h = parseInt(document.getElementById("inpH").value)||0;
   const m = parseInt(document.getElementById("inpM").value)||0;
@@ -529,11 +582,11 @@ function actualizarTotal() {
 
 // ── BUSCADOR DE PRODUCTOS ──
 function filtrarProductos() {
-  const q = document.getElementById("buscarProd").value.trim().toLowerCase();
-  const marca = document.getElementById("selMarca").value;
+  const q    = document.getElementById("buscarProd").value.trim().toLowerCase();
+  const marca = S.activacionSel ? S.activacionSel.marca : "";
   let pool = S.allProductos;
-  if (marca) pool = pool.filter(p=>p.marca===marca);
-  const hits = q ? pool.filter(p=>p.producto.toLowerCase().includes(q)) : pool;
+  if (marca) pool = pool.filter(p => p.marca === marca);
+  const hits = q ? pool.filter(p => p.producto.toLowerCase().includes(q)) : pool;
   renderDrop(hits, q);
 }
 
@@ -569,36 +622,29 @@ function cerrarDrop() {
 }
 
 function agregarDesdeBoton() {
-  // Validar que haya un producto seleccionado del dropdown
   const buscar = document.getElementById("buscarProd").value.trim();
   const qty    = parseInt(document.getElementById("qtyProd").value)||1;
 
   if (!buscar) { toast("Buscá y seleccioná un producto primero","err"); return; }
 
-  // Si no hay prodSeleccionado o el texto cambió, buscar coincidencia exacta
   if (!S.prodSeleccionado || S.prodSeleccionado.producto.toLowerCase() !== buscar.toLowerCase()) {
-    const marca = document.getElementById("selMarca").value;
+    const marca = S.activacionSel ? S.activacionSel.marca : "";
     let pool = S.allProductos;
-    if (marca) pool = pool.filter(p=>p.marca===marca);
-    const match = pool.find(p=>p.producto.toLowerCase()===buscar.toLowerCase());
+    if (marca) pool = pool.filter(p => p.marca === marca);
+    const match = pool.find(p => p.producto.toLowerCase() === buscar.toLowerCase());
     if (!match) { toast("Seleccioná un producto de la lista","err"); return; }
     S.prodSeleccionado = { producto: match.producto, marca: match.marca };
   }
 
-  // Si ya está, sumar cantidad
-  const ex = S.carrito.find(c=>c.producto===S.prodSeleccionado.producto);
-  if (ex) {
-    ex.cantidad += qty;
-  } else {
-    S.carrito.push({ producto: S.prodSeleccionado.producto, marca: S.prodSeleccionado.marca, cantidad: qty });
-  }
+  const ex = S.carrito.find(c => c.producto === S.prodSeleccionado.producto);
+  if (ex) { ex.cantidad += qty; }
+  else { S.carrito.push({ producto: S.prodSeleccionado.producto, marca: S.prodSeleccionado.marca, cantidad: qty }); }
 
-  // Limpiar campos
   document.getElementById("buscarProd").value = "";
-  document.getElementById("qtyProd").value = "1";
+  document.getElementById("qtyProd").value = "";
   S.prodSeleccionado = null;
   renderCarrito();
-  toast(`✓ ${S.carrito[S.carrito.length-1]?.producto || "Producto"} agregado`,"ok");
+  toast(`✓ Producto agregado`,"ok");
 }
 
 function cambiarQty(idx, delta) {
@@ -607,7 +653,7 @@ function cambiarQty(idx, delta) {
 }
 
 function quitarProd(idx) {
-  S.carrito.splice(idx,1);
+  S.carrito.splice(idx, 1);
   renderCarrito();
 }
 
@@ -618,7 +664,7 @@ function renderCarrito() {
   const badge  = document.getElementById("carritoBadge");
 
   if (!S.carrito.length) {
-    vacio.style.display = "block";
+    vacio.style.display  = "block";
     header.style.display = "none";
     lista.querySelectorAll(".prod-row").forEach(e=>e.remove());
     return;
@@ -724,19 +770,22 @@ function agitar(){
 // ── VALIDAR PASO ──
 function validarPaso(n) {
   limpiarAlerta();
+
   if (n===0) {
     const ok=!!document.getElementById("selSupervisor").value;
     if(!ok){marcarErr("selSupervisor","eSupervisor");mostrarAlerta(["Seleccioná tu nombre"]);}
     return ok;
   }
+
   if (n===1) {
-    const f=[];
-    if(!document.getElementById("selMarca").value){marcarErr("selMarca","eMarca");f.push("Marca");}
-    if(!document.getElementById("selLocal").value){marcarErr("selLocal","eLocal");f.push("Local");}
-    if(!document.getElementById("selTipo").value) {marcarErr("selTipo","eTipo");  f.push("Tipo de activación");}
-    if(f.length){mostrarAlerta(f);return false;}
-    return true;
+    const ok=!!S.activacionSel;
+    if(!ok){
+      document.getElementById("eActivacion").classList.add("on");
+      mostrarAlerta(["Seleccioná una activación de la lista"]);
+    }
+    return ok;
   }
+
   if (n===2) {
     const h=parseInt(document.getElementById("inpH").value)||0;
     const m=parseInt(document.getElementById("inpM").value)||0;
@@ -745,6 +794,7 @@ function validarPaso(n) {
     if(!ok){document.getElementById("ePersonas").classList.add("on");mostrarAlerta(["Ingresá al menos una persona abordada"]);}
     return ok;
   }
+
   return true;
 }
 
@@ -753,8 +803,8 @@ function marcarErr(fId,eId){
   if(f)f.classList.add("err");if(e)e.classList.add("on");
 }
 function limpiarErr(fId,eId){
-  const f=document.getElementById(fId),e=document.getElementById(eId);
-  if(f)f.classList.remove("err");if(e)e.classList.remove("on");
+  if(fId){const f=document.getElementById(fId);if(f)f.classList.remove("err");}
+  if(eId){const e=document.getElementById(eId);if(e)e.classList.remove("on");}
 }
 function limpiarAlerta(){document.getElementById("alerta").classList.remove("on");}
 function mostrarAlerta(lista){
@@ -774,12 +824,15 @@ function enviar() {
   btn.innerHTML='<span class="spinner"></span> Enviando...';
   mostrarOverlay("Guardando relevamiento...","Esto puede tomar algunos segundos");
 
+  const a = S.activacionSel;
+
   const payload={
     supervisor:     document.getElementById("selSupervisor").value,
-    marca:          document.getElementById("selMarca").value,
-    local:          document.getElementById("selLocal").value,
-    tipoActivacion: document.getElementById("selTipo").value,
-    tematica:       document.getElementById("inputTematica").value.trim(),
+    marca:          a.marca,
+    local:          a.local,
+    tipoActivacion: a.tipo,
+    tematica:       a.tematica,
+    impulsadora:    a.impulsadora || "",
     hombres: parseInt(document.getElementById("inpH").value)||0,
     mujeres: parseInt(document.getElementById("inpM").value)||0,
     ninos:   parseInt(document.getElementById("inpN").value)||0,
@@ -827,15 +880,18 @@ function enviarConForm(payload){
 // ── RESET ──
 function cerrarModal(){document.getElementById("modalWrap").classList.remove("on");resetForm();}
 function resetForm(){
-  ["selSupervisor","selMarca","selTipo","inputTematica"].forEach(id=>{
-    const e=document.getElementById(id);if(e)e.value="";
-  });
-  document.getElementById("selLocal").innerHTML='<option value="">— Primero elegí la marca —</option>';
-  ["inpH","inpM","inpN"].forEach(id=>document.getElementById(id).value="0");
+  document.getElementById("selSupervisor").value="";
+  S.activacionSel=null;
+  S.activacionesSup=[];
+  document.getElementById("listaActivaciones").innerHTML="";
+  document.getElementById("listaActivaciones").style.display="none";
+  document.getElementById("infoActivacion").classList.remove("on");
+  document.getElementById("skelActivaciones").style.display="block";
+  ["inpH","inpM","inpN"].forEach(id=>document.getElementById(id).value="");
   document.getElementById("totalAb").textContent="0";
   S.carrito=[];renderCarrito();
   document.getElementById("buscarProd").value="";
-  document.getElementById("qtyProd").value="1";
+  document.getElementById("qtyProd").value="";
   S.prodSeleccionado=null;
   S.fotos=[null,null,null,null,null];
   for(let i=0;i<5;i++){

@@ -69,10 +69,10 @@ select.err,input.err{border-color:var(--rojo);box-shadow:0 0 0 3px rgba(200,16,4
 .emsg.on{display:block}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:400px){.row2{grid-template-columns:1fr}}
-.fecha-box{padding:11px 14px;border:1.5px solid var(--gris-2);border-radius:9px;
+.fecha-input{width:100%;padding:11px 14px;border:1.5px solid var(--gris-2);border-radius:9px;
   font-size:.95rem;background:var(--gris-1);color:var(--oscuro);font-weight:600;
-  display:flex;align-items:center;justify-content:space-between;}
-.fecha-box small{font-size:.7rem;color:var(--gris-3);font-weight:400}
+  font-family:inherit;cursor:pointer;transition:border-color .18s;}
+.fecha-input:focus{outline:none;border-color:var(--oscuro);box-shadow:0 0 0 3px rgba(26,26,46,.1);background:#fff;}
 .skel{border-radius:9px;height:44px;background:linear-gradient(90deg,#e8eaed 25%,#f1f3f4 50%,#e8eaed 75%);
   background-size:200% 100%;animation:sk 1.4s ease infinite;}
 @keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
@@ -153,6 +153,11 @@ select.err,input.err{border-color:var(--rojo);box-shadow:0 0 0 3px rgba(200,16,4
   padding:2px 8px;border-radius:20px;}
 .carrito-vacio{text-align:center;padding:18px;border:1.5px dashed var(--gris-2);
   border-radius:9px;font-size:.85rem;color:var(--gris-3);}
+.carrito-total{background:var(--oscuro);border-radius:9px;padding:11px 16px;
+  display:flex;align-items:center;justify-content:space-between;margin-top:12px;}
+.carrito-total-lbl{color:rgba(255,255,255,.7);font-size:.82rem;font-weight:500}
+.carrito-total-val{color:#fff;font-size:1.25rem;font-weight:800;font-variant-numeric:tabular-nums}
+.carrito-total-sub{color:rgba(255,255,255,.45);font-size:.68rem}
 .prod-row{display:flex;align-items:center;gap:8px;padding:9px 0;
   border-bottom:1px solid var(--gris-2);}
 .prod-row:last-child{border-bottom:none}
@@ -294,11 +299,8 @@ select.err,input.err{border-color:var(--rojo);box-shadow:0 0 0 3px rgba(200,16,4
         <div class="emsg" id="eSupervisor">Seleccioná tu nombre</div>
       </div>
       <div class="field">
-        <label>Fecha</label>
-        <div class="fecha-box">
-          <span id="fechaHoy"></span>
-          <small>Automática</small>
-        </div>
+        <label>Fecha de la activación <span class="req">*</span></label>
+        <input type="date" class="fecha-input" id="inputFecha">
       </div>
     </div>
   </div>
@@ -404,6 +406,13 @@ select.err,input.err{border-color:var(--rojo);box-shadow:0 0 0 3px rgba(200,16,4
             Buscá un producto y tocá "+ Agregar"
           </div>
         </div>
+        <div class="carrito-total" id="carritoTotal" style="display:none">
+          <div>
+            <div class="carrito-total-lbl">Total unidades vendidas</div>
+            <div class="carrito-total-sub" id="carritoTotalProd">0 productos distintos</div>
+          </div>
+          <div class="carrito-total-val" id="carritoTotalVal">0</div>
+        </div>
       </div>
     </div>
   </div>
@@ -468,8 +477,12 @@ const S = {
 
 // ── INIT ──
 document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("fechaHoy").textContent =
-    new Date().toLocaleDateString("es-PY");
+  // Inicializar fecha con hoy por defecto
+  const hoy = new Date();
+  const yyyy = hoy.getFullYear();
+  const mm = String(hoy.getMonth()+1).padStart(2,"0");
+  const dd = String(hoy.getDate()).padStart(2,"0");
+  document.getElementById("inputFecha").value = `${yyyy}-${mm}-${dd}`;
   initGPS();
   mostrarOverlay("Cargando datos...");
   jsonpGet(API, "cbDatos");
@@ -675,10 +688,14 @@ function renderCarrito() {
   const vacio  = document.getElementById("carritoVacio");
   const header = document.getElementById("carritoHeader");
   const badge  = document.getElementById("carritoBadge");
+  const total  = document.getElementById("carritoTotal");
+  const totalVal = document.getElementById("carritoTotalVal");
+  const totalProd = document.getElementById("carritoTotalProd");
 
   if (!S.carrito.length) {
     vacio.style.display  = "block";
     header.style.display = "none";
+    total.style.display  = "none";
     lista.querySelectorAll(".prod-row").forEach(e=>e.remove());
     return;
   }
@@ -703,6 +720,12 @@ function renderCarrito() {
       <button class="prod-row-del" onclick="quitarProd(${i})" title="Quitar">✕</button>`;
     lista.insertBefore(div, document.getElementById("carritoVacio"));
   });
+
+  // Calcular y mostrar total
+  const totalUnidades = S.carrito.reduce((s,c) => s + c.cantidad, 0);
+  totalVal.textContent = totalUnidades;
+  totalProd.textContent = S.carrito.length + " producto" + (S.carrito.length !== 1 ? "s" : "") + " distintos";
+  total.style.display = "flex";
 }
 
 // ── FOTOS ──
@@ -872,8 +895,20 @@ function enviar() {
 
   const a = S.activacionSel;
 
+  // Formatear fecha seleccionada dd/MM/yyyy
+  const rawFecha = document.getElementById("inputFecha").value;
+  let fechaEnvio = "";
+  if(rawFecha){
+    const [fy,fm,fd]=rawFecha.split("-");
+    fechaEnvio=`${fd}/${fm}/${fy}`;
+  } else {
+    const hoy=new Date();
+    fechaEnvio=`${String(hoy.getDate()).padStart(2,"0")}/${String(hoy.getMonth()+1).padStart(2,"0")}/${hoy.getFullYear()}`;
+  }
+
   const payload={
     supervisor:     document.getElementById("selSupervisor").value,
+    fechaActivacion: fechaEnvio,
     marca:          a.marca,
     local:          a.local,
     tipoActivacion: a.tipo,
@@ -929,6 +964,10 @@ function resetForm(){
   document.getElementById("selSupervisor").value="";
   const mp = document.getElementById("marcaPill");
   mp.textContent=""; mp.className="marca-pill";
+  // Resetear fecha a hoy
+  const hoyR=new Date();
+  document.getElementById("inputFecha").value=
+    `${hoyR.getFullYear()}-${String(hoyR.getMonth()+1).padStart(2,"0")}-${String(hoyR.getDate()).padStart(2,"0")}`;
   S.activacionSel=null;
   S.activacionesSup=[];
   document.getElementById("listaActivaciones").innerHTML="";
@@ -938,6 +977,7 @@ function resetForm(){
   ["inpH","inpM","inpN"].forEach(id=>document.getElementById(id).value="");
   document.getElementById("totalAb").textContent="0";
   S.carrito=[];renderCarrito();
+  document.getElementById("carritoTotal").style.display="none";
   document.getElementById("buscarProd").value="";
   document.getElementById("qtyProd").value="";
   S.prodSeleccionado=null;

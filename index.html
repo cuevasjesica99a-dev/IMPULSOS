@@ -73,6 +73,14 @@ select.err,input.err{border-color:var(--rojo);box-shadow:0 0 0 3px rgba(200,16,4
   font-size:.95rem;background:var(--gris-1);color:var(--oscuro);font-weight:600;
   font-family:inherit;cursor:pointer;transition:border-color .18s;}
 .fecha-input:focus{outline:none;border-color:var(--oscuro);box-shadow:0 0 0 3px rgba(26,26,46,.1);background:#fff;}
+.turno-wrap{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:2px}
+.btn-turno{padding:13px 10px;border:1.5px solid var(--gris-2);border-radius:10px;
+  font-size:1rem;font-weight:700;cursor:pointer;text-align:center;background:#fff;
+  color:var(--gris-3);transition:all .18s;-webkit-tap-highlight-color:transparent;
+  letter-spacing:.03em;}
+.btn-turno:active{transform:scale(.97)}
+.btn-turno.sel-am{background:var(--oscuro);border-color:var(--oscuro);color:#fff}
+.btn-turno.sel-pm{background:var(--rojo);border-color:var(--rojo);color:#fff}
 .skel{border-radius:9px;height:44px;background:linear-gradient(90deg,#e8eaed 25%,#f1f3f4 50%,#e8eaed 75%);
   background-size:200% 100%;animation:sk 1.4s ease infinite;}
 @keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
@@ -302,6 +310,18 @@ select.err,input.err{border-color:var(--rojo);box-shadow:0 0 0 3px rgba(200,16,4
         <label>Fecha de la activación <span class="req">*</span></label>
         <input type="date" class="fecha-input" id="inputFecha">
       </div>
+      <div class="field">
+        <label>Horario del relevamiento <span class="req">*</span></label>
+        <div class="turno-wrap">
+          <button type="button" class="btn-turno" id="btnAM" onclick="selTurno('AM')">
+            ☀️ AM
+          </button>
+          <button type="button" class="btn-turno" id="btnPM" onclick="selTurno('PM')">
+            🌙 PM
+          </button>
+        </div>
+        <div class="emsg" id="eTurno">Seleccioná el horario</div>
+      </div>
     </div>
   </div>
 
@@ -465,6 +485,7 @@ const TOTAL = 5;
 const S = {
   paso: 0,
   fotos: Array(7).fill(null),
+  turno: "",
   carrito: [],
   allProductos: [],
   allActivaciones: [],    // todas las activaciones de Hoja 2
@@ -536,6 +557,14 @@ function mostrarSelects() {
   if(sel) sel.style.display="block";
   document.getElementById("skelProductos").style.display="none";
   document.getElementById("ventasUI").style.display="block";
+}
+
+// ── TURNO AM/PM ──
+function selTurno(t) {
+  S.turno = t;
+  document.getElementById("btnAM").className = "btn-turno" + (t==="AM" ? " sel-am" : "");
+  document.getElementById("btnPM").className = "btn-turno" + (t==="PM" ? " sel-pm" : "");
+  document.getElementById("eTurno").classList.remove("on");
 }
 
 // ── SUPERVISOR → filtra activaciones ──
@@ -841,9 +870,13 @@ function validarPaso(n) {
   limpiarAlerta();
 
   if (n===0) {
-    const ok=!!document.getElementById("selSupervisor").value;
-    if(!ok){marcarErr("selSupervisor","eSupervisor");mostrarAlerta(["Seleccioná tu nombre"]);}
-    return ok;
+    const okSup=!!document.getElementById("selSupervisor").value;
+    const okTurno=!!S.turno;
+    const errores=[];
+    if(!okSup){marcarErr("selSupervisor","eSupervisor");errores.push("Seleccioná tu nombre");}
+    if(!okTurno){document.getElementById("eTurno").classList.add("on");errores.push("Seleccioná el horario AM o PM");}
+    if(errores.length){mostrarAlerta(errores);}
+    return okSup && okTurno;
   }
 
   if (n===1) {
@@ -909,6 +942,7 @@ function enviar() {
   const payload={
     supervisor:     document.getElementById("selSupervisor").value,
     fechaActivacion: fechaEnvio,
+    turno:          S.turno,
     marca:          a.marca,
     local:          a.local,
     tipoActivacion: a.tipo,
@@ -964,6 +998,9 @@ function resetForm(){
   document.getElementById("selSupervisor").value="";
   const mp = document.getElementById("marcaPill");
   mp.textContent=""; mp.className="marca-pill";
+  S.turno="";
+  document.getElementById("btnAM").className="btn-turno";
+  document.getElementById("btnPM").className="btn-turno";
   // Resetear fecha a hoy
   const hoyR=new Date();
   document.getElementById("inputFecha").value=

@@ -473,7 +473,7 @@ select.err,input.err{border-color:var(--rojo);box-shadow:0 0 0 3px rgba(200,16,4
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbw_hbXpzXEi8btznyUhp8xVCi6_QFlAJq5Z4S46CzpfbWG72LbmiQ6i7VAlgLR1S-1C/exec";
+const API = "https://script.google.com/macros/s/AKfycbwbCOW5MyLiPQt0Ujalq6gGsqqoJJpWwx8v9o1hh8zZ4uhXKd8bu8jR0Lq7gso-j2uW/exec";
 const TOTAL = 5;
 
 const S = {
@@ -947,7 +947,12 @@ function enviar() {
     lat: S.lat, lng: S.lng,
   };
 
-  console.log("PAYLOAD ENVIADO:", JSON.stringify(payload));
+  console.log("=== PAYLOAD COMPLETO ===");
+  console.log("adultos:", document.getElementById("inpA").value);
+  console.log("ninos:", document.getElementById("inpN").value);
+  console.log("carrito:", JSON.stringify(S.carrito));
+  console.log("turno:", S.turno);
+  console.log("payload completo:", JSON.stringify(payload));
   enviarConForm(payload)
     .then(()=>{
       ocultarOverlay();S.enviando=false;

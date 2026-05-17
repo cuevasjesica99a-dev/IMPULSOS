@@ -366,16 +366,10 @@ select.err,input.err{border-color:var(--rojo);box-shadow:0 0 0 3px rgba(200,16,4
   <div class="paso" id="paso-2">
     <div class="card">
       <div class="card-title">Personas Abordadas <span class="req" style="font-weight:400">*</span></div>
-      <div class="personas-grid">
+      <div class="personas-grid" style="grid-template-columns:1fr 1fr">
         <div class="personas-box">
-          <label for="inpH">👨 Hombres</label>
-          <input type="number" id="inpH" min="0" value=""
-                 inputmode="numeric" pattern="[0-9]*" placeholder="0"
-                 oninput="actualizarTotal()">
-        </div>
-        <div class="personas-box">
-          <label for="inpM">👩 Mujeres</label>
-          <input type="number" id="inpM" min="0" value=""
+          <label for="inpA">👥 Adultos</label>
+          <input type="number" id="inpA" min="0" value=""
                  inputmode="numeric" pattern="[0-9]*" placeholder="0"
                  oninput="actualizarTotal()">
         </div>
@@ -628,11 +622,10 @@ function seleccionarActivacion(i) {
 
 // ── PERSONAS ──
 function actualizarTotal() {
-  const h = parseInt(document.getElementById("inpH").value)||0;
-  const m = parseInt(document.getElementById("inpM").value)||0;
+  const a = parseInt(document.getElementById("inpA").value)||0;
   const n = parseInt(document.getElementById("inpN").value)||0;
-  document.getElementById("totalAb").textContent = h+m+n;
-  if (h+m+n > 0) document.getElementById("ePersonas").classList.remove("on");
+  document.getElementById("totalAb").textContent = a+n;
+  if (a+n > 0) document.getElementById("ePersonas").classList.remove("on");
 }
 
 // ── BUSCADOR DE PRODUCTOS ──
@@ -889,10 +882,9 @@ function validarPaso(n) {
   }
 
   if (n===2) {
-    const h=parseInt(document.getElementById("inpH").value)||0;
-    const m=parseInt(document.getElementById("inpM").value)||0;
+    const a=parseInt(document.getElementById("inpA").value)||0;
     const n2=parseInt(document.getElementById("inpN").value)||0;
-    const ok=h+m+n2>0;
+    const ok=a+n2>0;
     if(!ok){document.getElementById("ePersonas").classList.add("on");mostrarAlerta(["Ingresá al menos una persona abordada"]);}
     return ok;
   }
@@ -948,14 +940,14 @@ function enviar() {
     tipoActivacion: a.tipo,
     tematica:       a.tematica,
     impulsadora:    a.impulsadora || "",
-    hombres: parseInt(document.getElementById("inpH").value)||0,
-    mujeres: parseInt(document.getElementById("inpM").value)||0,
+    adultos: parseInt(document.getElementById("inpA").value)||0,
     ninos:   parseInt(document.getElementById("inpN").value)||0,
     carrito: S.carrito,
     fotos:   S.fotos.filter(f=>f),
     lat: S.lat, lng: S.lng,
   };
 
+  console.log("PAYLOAD ENVIADO:", JSON.stringify(payload));
   enviarConForm(payload)
     .then(()=>{
       ocultarOverlay();S.enviando=false;
@@ -1011,7 +1003,7 @@ function resetForm(){
   document.getElementById("listaActivaciones").style.display="none";
   document.getElementById("infoActivacion").classList.remove("on");
   document.getElementById("skelActivaciones").style.display="block";
-  ["inpH","inpM","inpN"].forEach(id=>document.getElementById(id).value="");
+  ["inpA","inpN"].forEach(id=>document.getElementById(id).value="");
   document.getElementById("totalAb").textContent="0";
   S.carrito=[];renderCarrito();
   document.getElementById("carritoTotal").style.display="none";
